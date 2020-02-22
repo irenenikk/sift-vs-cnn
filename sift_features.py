@@ -9,11 +9,11 @@ import torch
 import cv2 as cv
 
 parser = argparse.ArgumentParser(description='Obtain SIFT features for training set')
-parser.add_argument("image_root", type=str,
+parser.add_argument("-root", "--image_root", type=str, default="data/images_small",
                     help="The path to the image data folder")
-parser.add_argument("training_index_file", type=str,
+parser.add_argument("-train-idx", "--training_index_file", type=str, default="data/Butterfly200_train_release.txt",
                     help="The path to the file with training indices")
-parser.add_argument("species_file", type=str,
+parser.add_argument("-s", "--species_file", type=str, default="data/species.txt",
                     help="The path to the file with mappings from index to species name")
 
 class Rescale(object):
