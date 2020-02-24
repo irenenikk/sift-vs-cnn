@@ -1,20 +1,23 @@
 import argparse
 import os
 import cv2 as cv
-from data_pipeline.dataloader import get_butterfly_dataloader
+from data_pipeline.dataloaders import get_butterfly_dataloader, get_sift_dataloader
+import pandas as pd
+from data_pipeline.utils import read_images
+from torch.utils.data import DataLoader
 
 parser = argparse.ArgumentParser(description='Obtain SIFT features for training set')
-parser.add_argument("-root", "--image_root", type=str, default="data/images_small",
+parser.add_argument("-root", "--image-root", type=str, default="data/images_small",
                     help="The path to the image data folder")
-parser.add_argument("-train-idx", "--training_index_file", type=str, default="data/Butterfly200_train_release.txt",
+parser.add_argument("-train-idx", "--training_index-file", type=str, default="data/Butterfly200_train_release.txt",
                     help="The path to the file with training indices")
-parser.add_argument("-s", "--species_file", type=str, default="data/species.txt",
+parser.add_argument("-s", "--species-file", type=str, default="data/species.txt",
                     help="The path to the file with mappings from index to species name")
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, 128)
-    for x, y in dataloader: 
-        species_names = butterfly_dataset.index2species(y)
-        cv.imshow(species_name[0], x[0].numpy())
-        cv.waitKey()
+    training_indices = pd.read_csv(args.training_index_file, sep=' ', header=None)
+    training_labels = training_indices.iloc[:, 1]
+    training_images = read_images(args.image_root, training_indices)
+    n = 100
+    sift_dataloader = get_sift_dataloader(training_images[:n], training_labels[:n], 'features/sift_features'+str(n), 1, 100)

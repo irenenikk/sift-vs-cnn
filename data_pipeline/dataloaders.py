@@ -1,7 +1,8 @@
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from skimage import transform
-from butterfly_dataset import ButterflyDataset
+from .butterfly_dataset import ButterflyDataset
+from .sift_dataset import SIFTDataset
 
 class Rescale(object):
     """Rescale the image in a sample to a given size.
@@ -28,7 +29,13 @@ def get_butterfly_dataloader(image_root, index_file, species_file, batch_size):
                                         species_file=species_file,
                                         transform=transforms.Compose([
                                                Rescale(256)
-                                               # TODO: do these have to be transposed because tensors treat color differently?
+                                               # TODO: do these have to be transposed 
+                                               # because tensors treat color differently?
                                         ]))
     dataloader = DataLoader(butterfly_dataset, batch_size=batch_size, shuffle=True)
+    return dataloader
+
+def get_sift_dataloader(images, labels, feature_path, batch_size, feature_size=1000):
+    sift_dataset = SIFTDataset(images, labels, feature_path, feature_size)
+    dataloader = DataLoader(sift_dataset, batch_size=batch_size, shuffle=True)
     return dataloader

@@ -8,7 +8,7 @@ import cv2 as cv
 class ButterflyDataset(Dataset):
     """Butterfly 200 dataset."""
 
-    def __init__(self, indices_file, species_file, root_dir, transform=None):
+    def __init__(self, indices_file, species_file, root_dir, transform=None, grey=True):
         """
         Args:
             indice_file (string): Path to the csv file split annotations.
@@ -20,6 +20,7 @@ class ButterflyDataset(Dataset):
         self.idx2species = pd.read_csv(species_file, sep=' ', index_col=0, header=None)
         self.root_dir = root_dir
         self.transform = transform
+        self.grey = grey
 
     def __len__(self):
         return len(self.indices)
@@ -37,6 +38,8 @@ class ButterflyDataset(Dataset):
         img_name = os.path.join(self.root_dir,
                                 self.indices.iloc[idx, 0])
         image = cv.imread(img_name)
+        if self.grey:
+            image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         sample = (image, label_index)
 
         if self.transform:
