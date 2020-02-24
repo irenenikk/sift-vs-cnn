@@ -8,7 +8,7 @@ import cv2 as cv
 class ButterflyDataset(Dataset):
     """Butterfly 200 dataset."""
 
-    def __init__(self, indices_file, species_file, root_dir, transform=None, grey=True):
+    def __init__(self, indices_file, species_file, root_dir, grey, transform=None):
         """
         Args:
             indice_file (string): Path to the csv file split annotations.

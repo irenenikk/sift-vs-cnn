@@ -5,6 +5,7 @@ from data_pipeline.dataloaders import get_butterfly_dataloader, get_sift_dataloa
 import pandas as pd
 from data_pipeline.utils import read_images
 from torch.utils.data import DataLoader
+from train_cnn import train_baseline_net
 
 parser = argparse.ArgumentParser(description='Obtain SIFT features for training set')
 parser.add_argument("-root", "--image-root", type=str, default="data/images_small",
@@ -18,6 +19,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     training_indices = pd.read_csv(args.training_index_file, sep=' ', header=None)
     training_labels = training_indices.iloc[:, 1]
-    training_images = read_images(args.image_root, training_indices)
-    n = 100
-    sift_dataloader = get_sift_dataloader(training_images[:n], training_labels[:n], 'features/sift_features'+str(n), 1, 100)
+    training_images = read_images(args.image_root, training_indices, 1000)
+    #sift_dataloader = get_sift_dataloader(training_images[:100], training_labels[:100], 'features/sift_features'+str(n), 1, 100)
+    butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, 32)
+    train_baseline_net(butterfly_dataloader)
