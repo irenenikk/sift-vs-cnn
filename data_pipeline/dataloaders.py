@@ -58,7 +58,7 @@ def get_sift_dataloader(images, labels, feature_path, batch_size, feature_size=1
     dataloader = DataLoader(sift_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
-def get_pretrained_imagenet_dataloader(images, labels, batch_size):
-    imagenet_dataset = PretrainedImagenet(images, labels)
+def get_pretrained_imagenet_dataloader(images, labels, batch_size, feature_path):
+    imagenet_dataset = PretrainedImagenet(images, labels, feature_path)
     dataloader = DataLoader(imagenet_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
