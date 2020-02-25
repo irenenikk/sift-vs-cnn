@@ -1,2 +1,4 @@
 data
 __pycache__
+data_pipeline/features
+models/saved_models
