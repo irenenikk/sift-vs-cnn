@@ -3,6 +3,7 @@ from torchvision import transforms
 from skimage import transform
 from .butterfly_dataset import ButterflyDataset
 from .sift_dataset import SIFTDataset
+from .imagenet_pretrained import PretrainedImagenet
 import torch
 
 # Rescale and ToTensor taken from this tutorial: 
@@ -55,4 +56,9 @@ def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, g
 def get_sift_dataloader(images, labels, feature_path, batch_size, feature_size=1000):
     sift_dataset = SIFTDataset(images, labels, feature_path, feature_size)
     dataloader = DataLoader(sift_dataset, batch_size=batch_size, shuffle=True)
+    return dataloader
+
+def get_pretrained_imagenet_dataloader(images, labels, batch_size):
+    imagenet_dataset = PretrainedImagenet(images, labels)
+    dataloader = DataLoader(imagenet_dataset, batch_size=batch_size, shuffle=True)
     return dataloader

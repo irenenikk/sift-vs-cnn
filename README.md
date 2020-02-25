@@ -5,4 +5,5 @@ This project compares using SIFT with color features and both trained and pretra
 ## TODO / thoughts
 
 - [ ] Improve data preprocessing when training the neural network by doing random cropping
-- [ ] Make sure the tensor color dimensions are appropriate for OpenCV
+- [X] Make sure the tensor color dimensions are appropriate for OpenCV
+- [ ] Test reducing feature vector size for pretrained imagenet
