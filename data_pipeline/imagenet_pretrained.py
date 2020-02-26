@@ -7,15 +7,17 @@ from os import path
 import torch.nn as nn
 from PIL import Image
 import pickle
+from sklearn.decomposition import PCA
 
 class PretrainedImagenet(Dataset):
 
-    def __init__(self, images, labels, feature_path):
+    def __init__(self, images, labels, feature_path, reduced_dims=None):
         self.images = images
         self.labels = labels
         assert len(self.images) == len(self.labels)
         curr_dir = path.dirname(path.realpath(__file__))
         full_feature_path = path.join(curr_dir, feature_path)
+        pca = PCA(n_components=reduced_dims)
         if path.exists(full_feature_path):
             print('Loading pretrained Imagenet features from', full_feature_path)
             self.features = pickle.load(open(full_feature_path, "rb"))
@@ -23,6 +25,14 @@ class PretrainedImagenet(Dataset):
             self.get_features_for_images(images)
             print('Saving pretrained Imagenet features to', full_feature_path)
             pickle.dump(self.features, open(full_feature_path, "wb"))
+        if reduced_dims is not None:
+            reduced_features_path = path.join(curr_dir, feature_path + "_reduced_" + reduced_dims)
+            if path.exists(reduced_features_path):
+                self.features = pickle.load(open(reduced_features_path, "rb"))            
+            else:
+                self.features = pca.fit_transform(self.features)
+                pickle.dump(self.features, open(reduced_features_path, "wb"))
+
 
     def get_features_for_images(self):
         preprocess = transforms.Compose([
