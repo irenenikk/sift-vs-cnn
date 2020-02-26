@@ -3,14 +3,8 @@ import argparse
 from models.baseline_cnn import BaselineCNN
 import torch
 import torch.nn as nn
-
-parser = argparse.ArgumentParser(description='Obtain SIFT features for training set')
-parser.add_argument("-root", "--image-root", type=str, default="data/images_small",
-                    help="The path to the image data folder")
-parser.add_argument("-train-idx", "--training_index-file", type=str, default="data/Butterfly200_train_release.txt",
-                    help="The path to the file with training indices")
-parser.add_argument("-s", "--species-file", type=str, default="data/species.txt",
-                    help="The path to the file with mappings from index to species name")
+from sklearn.model_selection import GridSearchCV
+from skorch import NeuralNetClassifier
 
 def save_model(model, path):
     curr_dir = os.path.dirname(os.path.realpath(__file__))
@@ -39,3 +33,27 @@ def train_baseline_net(trainloader, epochs=100, learning_rate=0.001):
                     (epoch + 1, i + 1, running_loss / 100))
                 running_loss = 0.0
     save_model(baselineNet, 'saved_models/baseline_net_model')
+
+def find_hyperparameters(training_images, training_labels):
+    net = NeuralNetClassifier(
+        BaselineCNN,
+        max_epochs=10,
+        lr=[0.1, 0.005],
+        # Shuffle training data on each epoch
+        iterator_train__shuffle=True,
+    )
+    params = {
+        'lr': [0.01, 0.02],
+        'max_epochs': [10, 20],
+        'module__maxpool_kernel_size': [2, 4, 8],
+        'module__out1': [6, 12, 18],
+        'module__kernel1': [2, 4, 8],
+        'module__in2': [2, 6, 12],
+        'module_out2': [8, 16, 24],
+        'module__kernel2': [2, 4, 8]
+    }
+    gs = GridSearchCV(net, params, refit=False, cv=3, scoring='accuracy')
+    # TODO: X and y sizes are said not to match
+    gs.fit(training_images, training_labels)
+    print(gs.best_score_)
+    return gs.best_params_

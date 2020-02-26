@@ -3,3 +3,4 @@ pytorch
 torchvision
 pandas
 numpy
+skorch
