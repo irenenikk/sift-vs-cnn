@@ -6,10 +6,11 @@ from data_pipeline.dataloaders import get_butterfly_dataloader, \
 import pandas as pd
 from data_pipeline.utils import read_images
 from torch.utils.data import DataLoader
-from train_cnn import train_baseline_net, find_hyperparameters
+from train_cnn import train_neural_net, find_hyperparameters
 from argparser import get_argparser
 from PIL import Image
 from torchvision import transforms
+from train_cnn import run_transfer_learning
 
 
 def find_baseline_hyperparameters(training_images, training_labels):
@@ -24,11 +25,13 @@ def find_baseline_hyperparameters(training_images, training_labels):
 if __name__ == '__main__':
     parser = get_argparser()
     args = parser.parse_args()
+    #N = 1000
     training_indices = pd.read_csv(args.training_index_file, sep=' ', header=None)
-    training_labels = training_indices.iloc[:, 1]
-    n = 1000
-    training_images = read_images(args.image_root, training_indices, n, gray=False)
-    #sift_dataloader = get_sift_dataloader(training_images[:100], training_labels[:100], 'features/sift_features'+str(n), 1, 100)
-    #butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, 32)
-    #train_baseline_net(butterfly_dataloader)
+    #training_labels = training_indices.iloc[:, 1]
+    #training_images = read_images(args.image_root, training_indices, N, gray=False)
+    training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, 32)
+    development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, 32)
+    run_transfer_learning(training_butterfly_dataloader, development_butterfly_dataloader, training_indices.iloc[:, 1].nunique())
+    #sift_dataloader = get_sift_dataloader(training_images[:N], training_labels[:N], 'features/sift_features', 32, feature_size=500)
+    #train_neural_net(butterfly_dataloader)
     #imagenet_feature_dataloader = get_pretrained_imagenet_dataloader(training_images, training_labels[:n], 32, 'features/imagenet_features_'+str(n))

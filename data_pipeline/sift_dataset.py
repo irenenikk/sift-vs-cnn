@@ -3,6 +3,7 @@ import cv2 as cv
 import pickle
 from os import path
 import time
+from sklearn.cluster import MiniBatchKMeans
 
 class SIFTDataset(Dataset):
 
