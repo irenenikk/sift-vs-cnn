@@ -4,6 +4,7 @@ import pickle
 from os import path
 import time
 from sklearn.cluster import MiniBatchKMeans
+import numpy as np
 
 class SIFTDataset(Dataset):
 
@@ -30,11 +31,14 @@ class SIFTDataset(Dataset):
         for image in images:
             keypoints, desc = sift.detectAndCompute(image, None)
             bow_kmeans_trainer.add(desc)
+            descriptors += [desc]
         print('Training Kmeans with size', vocabulary_size)
         start = time.time()
         vocabulary = bow_kmeans_trainer.cluster()
         end = time.time()
         print('Training took', (end-start)/60, 'minutes')
+        import ipdb; ipdb.set_trace()
+        # check what the the vocabulary is
         return vocabulary
 
     def get_bow_features(self, images, vocabulary):
