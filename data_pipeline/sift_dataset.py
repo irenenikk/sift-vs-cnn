@@ -37,8 +37,6 @@ class SIFTDataset(Dataset):
         vocabulary = bow_kmeans_trainer.cluster()
         end = time.time()
         print('Training took', (end-start)/60, 'minutes')
-        import ipdb; ipdb.set_trace()
-        # check what the the vocabulary is
         return vocabulary
 
     def get_bow_features(self, images, vocabulary):
