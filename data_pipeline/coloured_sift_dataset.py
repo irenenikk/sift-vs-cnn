@@ -42,23 +42,27 @@ class ColouredSIFTDataset(Dataset):
             raise ValueError('Color space', color_space, 'not supported')
         self.images = [transform(image) for image in self.images]
 
+    def get_coloured_descriptors(self, image, sift):
+        # the features from different image dimensions are concatenated together
+        gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        keypoints = sift.detect(gray)
+        concat_desc = None
+        for dim in range(3):
+            color_dim_image = image[:, :, dim]
+            keypoints, desc = sift.compute(color_dim_image, keypoints)
+            if concat_desc is None:
+                concat_desc = desc
+            else:
+                concat_desc = np.concatenate((concat_desc, desc), axis=1)
+        return concat_desc
+
     def get_coloured_bow_vocabulary(self, vocabulary_size):
-        print('Building BOW vocabulary for', len(self.images), 'self.images')
+        print('Building BOW vocabulary for', len(self.images), 'images')
         bow_kmeans_trainer = cv.BOWKMeansTrainer(vocabulary_size)
         sift = cv.xfeatures2d.SIFT_create()
         for image in self.images:
             # the features from different image dimensions are concatenated together
-            concat_desc = []
-            gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-            keypoints = sift.detect(gray)
-            concat_desc = None
-            for dim in range(3):
-                color_dim_image = image[:, :, dim]
-                keypoints, desc = sift.compute(color_dim_image, keypoints)
-                if concat_desc is None:
-                    concat_desc = desc
-                else:
-                    concat_desc = np.concatenate((concat_desc, desc), axis=1)
+            concat_desc = self.get_coloured_descriptors(image, sift)
             bow_kmeans_trainer.add(concat_desc)
         print('Training Kmeans with size', vocabulary_size)
         start = time.time()
@@ -80,13 +84,7 @@ class ColouredSIFTDataset(Dataset):
         bow_extractor.setVocabulary(vocabulary)
         bow_features = []
         for image in self.images:
-            concat_features = []
-            gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-            keypoints = sift.detect(gray)
-            for dim in range(3):
-                color_dim_image = image[:, :, dim]
-                features = bow_extractor.compute(color_dim_image, keypoints)
-                concat_features += [features]
+            concat_features = self.get_coloured_descriptors(image, sift)
             bow_features.append(concat_features)
         return bow_features
 
