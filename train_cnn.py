@@ -21,6 +21,7 @@ def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, 
     model.to(device)
     best_accuracy = 0
     best_model = copy.deepcopy(model.state_dict())
+    print('Training a neural network with a trainset of size', len(trainloader.dataset))
     for epoch in range(epochs):  # loop over the dataset multiple times
         running_loss = 0.0
         model.train()
@@ -28,17 +29,18 @@ def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, 
             inputs, labels = data[0].to(device), data[1].to(device)
             optimiser.zero_grad()
             outputs = model(inputs)
+            import ipdb; ipdb.set_trace()
             loss = criterion(outputs, labels)
             loss.backward()
             optimiser.step()
             running_loss += loss.item()
             scheduler.step()
-            if i % 100 == 0:
+            if (i+1) % 100 == 0:
                 print('[%d, %5d] loss: %.3f' %
                     (epoch + 1, i + 1, running_loss / 100))
                 running_loss = 0.0
         # evaluate after each epoch
-        print('Evaluation model')
+        print('Evaluating model')
         model.eval()
         loss, acc = evaluate_model_accuracy(model, evalloader, criterion)
         print('Evaluation loss', loss, 'evaluation accuracy', acc)
@@ -55,10 +57,9 @@ def evaluate_model_accuracy(model, evalloader, criterion):
         x = x.to(device)
         y = y.to(device)
         outputs = model(x)
-        import ipdb; ipdb.set_trace()
         # what is the output shape
-        _, preds = torch.max(outputs, 1)
-        acc += (outputs == preds).sum()
+        preds = torch.argmax(outputs, axis=1)
+        acc += (y == preds).sum()
         loss += criterion(outputs, y)
     N = len(evalloader.dataset)
     acc /= N
