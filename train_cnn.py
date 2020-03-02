@@ -29,7 +29,6 @@ def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, 
             inputs, labels = data[0].to(device), data[1].to(device)
             optimiser.zero_grad()
             outputs = model(inputs)
-            import ipdb; ipdb.set_trace()
             loss = criterion(outputs, labels)
             loss.backward()
             optimiser.step()
@@ -42,7 +41,8 @@ def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, 
         # evaluate after each epoch
         print('Evaluating model')
         model.eval()
-        loss, acc = evaluate_model_accuracy(model, evalloader, criterion)
+        with torch.no_grad():
+            loss, acc = evaluate_model_accuracy(model, evalloader, criterion)
         print('Evaluation loss', loss, 'evaluation accuracy', acc)
         if acc > best_accuracy:
             print('New best accuracy')
@@ -59,8 +59,8 @@ def evaluate_model_accuracy(model, evalloader, criterion):
         outputs = model(x)
         # what is the output shape
         preds = torch.argmax(outputs, axis=1)
-        acc += (y == preds).sum()
-        loss += criterion(outputs, y)
+        acc += (y == preds).sum().item()
+        loss += criterion(outputs, y).item()
     N = len(evalloader.dataset)
     acc /= N
     loss /= N
