@@ -83,12 +83,13 @@ def evaluate_model_accuracy(model, evalloader, criterion):
     loss /=  len(evalloader)
     return loss, acc
 
-def run_transfer_learning(trainloader, evalloader, last_layer_size, resume):
+def run_transfer_learning(trainloader, evalloader, last_layer_size, resume, epochs):
     neural_net = PretrainedImagenet.get_resnet_feature_extractor_for_transfer(last_layer_size)
+    neural_net.to(device)
     criterion = nn.CrossEntropyLoss()
     optimiser = optim.SGD(neural_net.fc.parameters(), lr=0.001, momentum=0.9)
     scheduler = lr_scheduler.StepLR(optimiser, step_size=5, gamma=0.1)
-    train_neural_net(neural_net, 'data_pipeline/saved_models/transferred_extractor', trainloader, evalloader, criterion, optimiser, scheduler, resume=resume)
+    train_neural_net(neural_net, 'data_pipeline/saved_models/transferred_extractor', trainloader, evalloader, criterion, optimiser, scheduler, epochs=epochs, resume=resume)
 
 def find_hyperparameters(training_images, training_labels):
     net = NeuralNetClassifier(
