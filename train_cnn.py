@@ -24,15 +24,24 @@ def save_checkpoint(model, epoch, optimiser, model_filepath):
                 'optimiser_state_dict': optimiser.state_dict(),
                 }, model_filepath)
 
-def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, optimiser, scheduler, epochs=20):
+def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, optimiser, scheduler, epochs=20, resume=True):
     # GPU Stuff
+    checkpoint_file = 'data_pipeline/saved_models/transfer_learning_checkpoint'
+    epoch = 0
+    if resume:
+        print('Loading checkpoint from', checkpoint_file)
+        checkpoint = torch.load(checkpoint_file, map_location=device)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimiser.load_state_dict(checkpoint['optimiser_state_dict'])
+        epoch = checkpoint['epoch']
     model.to(device)
     best_accuracy = 0
     best_model = copy.deepcopy(model.state_dict())
     print('Training a neural network with a trainset of size', len(trainloader.dataset))
-    for epoch in range(epochs):  # loop over the dataset multiple times
+    for _ in range(epochs):  # loop over the dataset multiple times
         running_loss = 0.0
         model.train()
+        '''
         for i, data in enumerate(trainloader):
             inputs, labels = data[0].to(device), data[1].to(device)
             optimiser.zero_grad()
@@ -47,8 +56,9 @@ def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, 
                     (epoch + 1, i + 1, running_loss / 100))
                 running_loss = 0.0
         if (epoch + 1) % 2:
-            save_checkpoint(model, epoch, optimiser, 'data_pipeline/saved_models/transfer_learning_checkpoints')
+            save_checkpoint(model, epoch, optimiser, checkpoint_file)
         # evaluate after each epoch
+        '''
         print('Evaluating model')
         model.eval()
         with torch.no_grad():
@@ -58,6 +68,7 @@ def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, 
             print('New best accuracy')
             best_model = copy.deepcopy(model.state_dict())
             best_accuracy = acc
+        epoch += 1
     torch.save(best_model, model_filepath)
 
 def evaluate_model_accuracy(model, evalloader, criterion):
@@ -75,12 +86,12 @@ def evaluate_model_accuracy(model, evalloader, criterion):
     loss /= N
     return loss, acc
 
-def run_transfer_learning(trainloader, evalloader, last_layer_size):
+def run_transfer_learning(trainloader, evalloader, last_layer_size, resume):
     neural_net = PretrainedImagenet.get_resnet_feature_extractor_for_transfer(last_layer_size)
     criterion = nn.CrossEntropyLoss()
     optimiser = optim.SGD(neural_net.fc.parameters(), lr=0.001, momentum=0.9)
-    scheduler = lr_scheduler.StepLR(optimiser, step_size=7, gamma=0.1)
-    train_neural_net(neural_net, 'data_pipeline/saved_models/transferred_extractor', trainloader, evalloader, criterion, optimiser, scheduler)
+    scheduler = lr_scheduler.StepLR(optimiser, step_size=5, gamma=0.1)
+    train_neural_net(neural_net, 'data_pipeline/saved_models/transferred_extractor', trainloader, evalloader, criterion, optimiser, scheduler, resume)
 
 def find_hyperparameters(training_images, training_labels):
     net = NeuralNetClassifier(

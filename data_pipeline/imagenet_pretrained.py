@@ -56,14 +56,15 @@ class PretrainedImagenet(Dataset):
             self.features = [feature_extractor(preprocess(Image.fromarray(image)).unsqueeze(0).to(device)) for image in self.images]
 
     def load_transfer_learned_extractor(self):
-        transferred_extractor_path = path.join(self.curr_dir, 'saved_models/transferred_extractor')
+        transferred_extractor_path = path.join(self.curr_dir, 'saved_models/transfer_learning_checkpoint')
         feature_extractor = self.get_resnet_feature_extractor_for_transfer(len(self.labels))
         if not path.exists(transferred_extractor_path):
             ValueError('No feature extractor found trained with transfer learning. Please train the model.')
         print('Found feature extractor trained with transfer learning')
-        feature_extractor.load_state_dict(torch.load(transferred_extractor_path))
+        checkpoint = torch.load(transferred_extractor_path)
+        feature_extractor.load_state_dict(checkpoint['model_state_dict'])
         feature_extractor.eval()
-
+        return feature_extractor
 
     def read_imagenet_labels(self, label_path="imagenet_class_index.json"):
         full_path = path.join(curr_dir, label_path)
@@ -73,14 +74,14 @@ class PretrainedImagenet(Dataset):
 
     @classmethod
     def get_resnet_feature_extractor_for_transfer(self, labels_amount):
-        resnet = models.wide_resnet50_2(pretrained=True, progress=True)
-        # TODO: what is the second to last layer called?
+        resnet = models.resnet18(pretrained=True, progress=True)
         features = resnet.fc.in_features
+        print('Creating a resnet with a linear layer of shape (', features, ',', labels_amount, ')')
         resnet.fc = nn.Linear(features, labels_amount)
         return resnet
         
     def get_resnet_feature_extractor(self):
-        resnet = models.wide_resnet50_2(pretrained=True, progress=True)
+        resnet = models.resnet18(pretrained=True, progress=True)
         # remove the last linear layer to obtain features
         feature_extractor = nn.Sequential(*list(resnet.children())[:-1])
         return feature_extractor
