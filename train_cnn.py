@@ -91,7 +91,7 @@ def run_transfer_learning(trainloader, evalloader, last_layer_size, resume):
     criterion = nn.CrossEntropyLoss()
     optimiser = optim.SGD(neural_net.fc.parameters(), lr=0.001, momentum=0.9)
     scheduler = lr_scheduler.StepLR(optimiser, step_size=5, gamma=0.1)
-    train_neural_net(neural_net, 'data_pipeline/saved_models/transferred_extractor', trainloader, evalloader, criterion, optimiser, scheduler, resume)
+    train_neural_net(neural_net, 'data_pipeline/saved_models/transferred_extractor', trainloader, evalloader, criterion, optimiser, scheduler, resume=resume)
 
 def find_hyperparameters(training_images, training_labels):
     net = NeuralNetClassifier(
