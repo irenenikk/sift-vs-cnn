@@ -41,7 +41,6 @@ def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, 
     for _ in range(epochs):  # loop over the dataset multiple times
         running_loss = 0.0
         model.train()
-        '''
         for i, data in enumerate(trainloader):
             inputs, labels = data[0].to(device), data[1].to(device)
             optimiser.zero_grad()
@@ -58,7 +57,6 @@ def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, 
         if (epoch + 1) % 2:
             save_checkpoint(model, epoch, optimiser, checkpoint_file)
         # evaluate after each epoch
-        '''
         print('Evaluating model')
         model.eval()
         with torch.no_grad():
@@ -81,9 +79,8 @@ def evaluate_model_accuracy(model, evalloader, criterion):
         preds = torch.argmax(outputs, axis=1)
         acc += (y == preds).sum().item()
         loss += criterion(outputs, y).item()
-    N = len(evalloader.dataset)
-    acc /= N
-    loss /= N
+    acc /= len(evalloader.dataset)
+    loss /=  len(evalloader)
     return loss, acc
 
 def run_transfer_learning(trainloader, evalloader, last_layer_size, resume):
