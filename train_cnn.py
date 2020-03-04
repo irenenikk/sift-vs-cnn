@@ -16,7 +16,15 @@ def save_model(model, path):
     full_model_path = os.path.join(curr_dir, path)
     torch.save(model, full_model_path)
 
-def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, optimiser, scheduler, epochs=100, learning_rate=0.001):
+def save_checkpoint(model, epoch, optimiser, model_filepath):
+    print('Saving model to', model_filepath)
+    torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimiser_state_dict': optimiser.state_dict(),
+                }, model_filepath)
+
+def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, optimiser, scheduler, epochs=20):
     # GPU Stuff
     model.to(device)
     best_accuracy = 0
@@ -38,6 +46,8 @@ def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, 
                 print('[%d, %5d] loss: %.3f' %
                     (epoch + 1, i + 1, running_loss / 100))
                 running_loss = 0.0
+        if (epoch + 1) % 2:
+            save_checkpoint(model, epoch, optimiser, 'data_pipeline/saved_models/transfer_learning_checkpoints')
         # evaluate after each epoch
         print('Evaluating model')
         model.eval()
@@ -57,7 +67,6 @@ def evaluate_model_accuracy(model, evalloader, criterion):
         x = x.to(device)
         y = y.to(device)
         outputs = model(x)
-        # what is the output shape
         preds = torch.argmax(outputs, axis=1)
         acc += (y == preds).sum().item()
         loss += criterion(outputs, y).item()

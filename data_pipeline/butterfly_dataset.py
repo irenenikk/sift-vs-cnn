@@ -35,9 +35,8 @@ class ButterflyDataset(Dataset):
             idx = idx.tolist()
         
         label_index = self.indices.iloc[idx, 1]
-        img_name = os.path.join(self.root_dir,
-                                self.indices.iloc[idx, 0])
-        image = cv.imread(img_name)
+        img_path = os.path.join(self.root_dir, self.indices.iloc[idx, 0])
+        image = cv.imread(img_path)
         if self.grey:
             image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         sample = (image, label_index)

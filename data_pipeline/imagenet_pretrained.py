@@ -29,10 +29,13 @@ class PretrainedImagenet(Dataset):
         if reduced_dims is not None:
             reduced_features_path = path.join(curr_dir, feature_path + "_reduced_" + reduced_dims)
             if path.exists(reduced_features_path):
+                print('Loading reduced imagened features from', reduced_features_path)
                 self.features = pickle.load(open(reduced_features_path, "rb"))            
             else:
+                print('Building reduced features of size', reduced_dims)
                 pca = PCA(n_components=reduced_dims)
                 self.features = pca.fit_transform(self.features)
+                print('Saving reduced imagened features to', reduced_features_path)
                 pickle.dump(self.features, open(reduced_features_path, "wb"))
 
 

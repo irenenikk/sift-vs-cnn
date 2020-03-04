@@ -26,14 +26,16 @@ def find_baseline_hyperparameters(training_images, training_labels):
 if __name__ == '__main__':
     parser = get_argparser()
     args = parser.parse_args()
-    N = 1000
+    #N = 5000
     training_indices = pd.read_csv(args.training_index_file, sep=' ', header=None)
-    training_labels = training_indices.iloc[:, 1]
-    training_images = read_images(args.image_root, training_indices, N, gray=False)
+    #training_labels = training_indices.iloc[:, 1]
+    #training_images = read_images(args.image_root, training_indices, N, gray=False)
     training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, 32)
     development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, 32)
     run_transfer_learning(training_butterfly_dataloader, development_butterfly_dataloader, training_indices.iloc[:, 1].nunique())
     #sift_dataloader = get_sift_dataloader(training_images[:N], training_labels[:N], 'features/sift_features', 32, feature_size=500)
-    #coloured_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_hsv', 32, 'hsv')
+    #hsv_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_hsv', 32, 'hsv')
+    #bgr_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_bgr', 32, 'bgr')
+    #ycrcb_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_ycrcb', 32, 'YCrCb')
     #train_neural_net(butterfly_dataloader)
     #imagenet_feature_dataloader = get_pretrained_imagenet_dataloader(training_images, training_labels[:n], 32, 'features/imagenet_features_'+str(n))
