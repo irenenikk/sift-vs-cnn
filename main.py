@@ -32,7 +32,7 @@ if __name__ == '__main__':
     #training_images = read_images(args.image_root, training_indices, N, gray=False)
     training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, 64)
     development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, 64)
-    run_transfer_learning(training_butterfly_dataloader, development_butterfly_dataloader, training_indices.iloc[:, 1].nunique(), epochs=100)
+    run_transfer_learning(training_butterfly_dataloader, development_butterfly_dataloader, training_indices.iloc[:, 1].nunique(), resume=False, epochs=100)
     #sift_dataloader = get_sift_dataloader(training_images[:N], training_labels[:N], 'features/sift_features', 32, feature_size=500)
     #hsv_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_hsv', 32, 'hsv')
     #bgr_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_bgr', 32, 'bgr')
