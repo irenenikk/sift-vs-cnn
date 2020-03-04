@@ -75,6 +75,8 @@ class PretrainedImagenet(Dataset):
     @classmethod
     def get_resnet_feature_extractor_for_transfer(self, labels_amount):
         resnet = models.resnet18(pretrained=True, progress=True)
+        for param in resnet.parameters():
+            param.requires_grad = False
         features = resnet.fc.in_features
         print('Creating a resnet with a linear layer of shape (', features, ',', labels_amount, ')')
         resnet.fc = nn.Linear(features, labels_amount)
