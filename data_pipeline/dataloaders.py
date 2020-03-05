@@ -42,7 +42,7 @@ class ToTensor(object):
         label_index = label - 1
         return torch.from_numpy(image).float(), label_index
 
-def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, grey=False, length=None):
+def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, label_i, grey=False, length=None):
     butterfly_dataset = ButterflyDataset(indices_file=index_file,
                                         root_dir=image_root,
                                         species_file=species_file,
@@ -51,7 +51,8 @@ def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, g
                                                Rescale(256),
                                                ToTensor()
                                         ]),
-                                        length=length)
+                                        length=length,
+                                        label_i=label_i)
     dataloader = DataLoader(butterfly_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
@@ -60,7 +61,7 @@ def get_sift_dataloader(images, labels, feature_path, batch_size, feature_size=1
     dataloader = DataLoader(sift_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
-def get_coloured_sift_dataloader(images, labels, feature_path, batch_size, colour_space, feature_size=1000):
+def get_coloured_sift_dataloader(images, labels, feature_path, batch_size, colour_space, feature_size):
     sift_dataset = ColouredSIFTDataset(images, labels, feature_path, feature_size, colour_space)
     dataloader = DataLoader(sift_dataset, batch_size=batch_size, shuffle=True)
     return dataloader

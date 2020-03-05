@@ -14,9 +14,10 @@ class ColouredSIFTDataset(Dataset):
             raise ValueError('Images need to have colour to form a coloured SIFT dataset')
         self.labels = labels
         assert len(self.images) == len(self.labels)
+        self.gray_images = [cv.cvtColor(image, cv.COLOR_BGR2GRAY) for image in self.images]
         self.change_image_colourspace(color_space)
         curr_dir = path.dirname(path.realpath(__file__))
-        full_feature_path = path.join(curr_dir, feature_path)
+        full_feature_path = path.join(curr_dir, feature_path + '_' + str(vocabulary_size))
         if path.exists(full_feature_path):
             print('Loading SIFT features from', full_feature_path)
             self.features = pickle.load(open(full_feature_path, "rb"))
@@ -26,6 +27,12 @@ class ColouredSIFTDataset(Dataset):
             pickle.dump(self.features, open(full_feature_path, "wb"))
             print('Saving SIFT features to', full_feature_path)
 
+    @staticmethod
+    def normalise_rgb_dims(image):
+        # normalisation should reduce sensitivity to lumincance, surface orientation and other conditions
+        # as per Verma et al.
+        return (image / np.expand_dims(image.sum(-1), axis=2)*255).astype('uint8')
+
     def change_image_colourspace(self, color_space):
         # opencv color order is (blue, green, red)
         transform = None
@@ -34,18 +41,17 @@ class ColouredSIFTDataset(Dataset):
         elif color_space == 'YCrCb':
             transform = lambda image: cv.cvtColor(image, cv.COLOR_BGR2YCrCb)
         elif color_space == 'bgr':
-            transform = lambda image: cv.normalize(image, None, 0, 1, cv.NORM_MINMAX, dtype=cv.CV_32F)
+            transform = lambda image: self.normalise_rgb_dims(image)
         elif color_space == 'obgr':
-            # TODO: implement
-            pass
+            raise ValueError('Color space', color_space, 'hasn\'t been implemented yet')
         else:
             raise ValueError('Color space', color_space, 'not supported')
         self.images = [transform(image) for image in self.images]
 
-    def get_coloured_descriptors(self, image, sift):
+
+    def get_coloured_descriptors(self, image, gray_image, sift):
         # the features from different image dimensions are concatenated together
-        gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-        keypoints = sift.detect(gray)
+        keypoints = sift.detect(gray_image)
         concat_desc = None
         for dim in range(3):
             color_dim_image = image[:, :, dim]
@@ -60,9 +66,9 @@ class ColouredSIFTDataset(Dataset):
         print('Building BOW vocabulary for', len(self.images), 'images')
         bow_kmeans_trainer = cv.BOWKMeansTrainer(vocabulary_size)
         sift = cv.xfeatures2d.SIFT_create()
-        for image in self.images:
+        for image, gray_image in zip(self.images, self.gray_images):
             # the features from different image dimensions are concatenated together
-            concat_desc = self.get_coloured_descriptors(image, sift)
+            concat_desc = self.get_coloured_descriptors(image, gray_image, sift)
             bow_kmeans_trainer.add(concat_desc)
         print('Training Kmeans with size', vocabulary_size)
         start = time.time()

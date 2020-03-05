@@ -8,7 +8,7 @@ import cv2 as cv
 class ButterflyDataset(Dataset):
     """Butterfly 200 dataset."""
 
-    def __init__(self, indices_file, species_file, root_dir, grey, transform=None, length=None):
+    def __init__(self, indices_file, species_file, root_dir, grey, label_i, transform=None, length=None):
         """
         Args:
             indice_file (string): Path to the csv file split annotations.
@@ -22,6 +22,7 @@ class ButterflyDataset(Dataset):
         self.transform = transform
         self.grey = grey
         self.length = length if length is not None else len(self.indices)
+        self.label_i = label_i
 
     def __len__(self):
         return self.length
@@ -35,7 +36,7 @@ class ButterflyDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
         
-        label_index = self.indices.iloc[idx, 1]
+        label_index = self.indices.iloc[idx, self.label_i]
         img_path = os.path.join(self.root_dir, self.indices.iloc[idx, 0])
         image = cv.imread(img_path)
         if self.grey:
