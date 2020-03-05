@@ -8,6 +8,7 @@ import torch.nn as nn
 from PIL import Image
 import pickle
 from sklearn.decomposition import PCA
+from utils import ToTensor()
 
 class PretrainedImagenet(Dataset):
 
@@ -42,7 +43,7 @@ class PretrainedImagenet(Dataset):
     def get_features_for_images(self):
         preprocess = transforms.Compose([
             transforms.Resize(256),
-            transforms.ToTensor(),
+            ToTensor(),
             # this is obligatory when using preatrained models from pytorch
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
