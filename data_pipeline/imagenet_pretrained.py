@@ -75,7 +75,7 @@ class PretrainedImagenet(Dataset):
 
     @classmethod
     def get_resnet_feature_extractor_for_transfer(self, labels_amount):
-        resnet = models.resnet18(pretrained=True, progress=True)
+        resnet = models.resnet152(pretrained=True, progress=True)
         for param in resnet.parameters():
             param.requires_grad = False
         features = resnet.fc.in_features
@@ -84,7 +84,7 @@ class PretrainedImagenet(Dataset):
         return resnet
         
     def get_resnet_feature_extractor(self):
-        resnet = models.resnet18(pretrained=True, progress=True)
+        resnet = models.resnet152(pretrained=True, progress=True)
         # remove the last linear layer to obtain features
         feature_extractor = nn.Sequential(*list(resnet.children())[:-1])
         return feature_extractor

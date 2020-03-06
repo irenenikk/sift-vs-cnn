@@ -43,7 +43,6 @@ class SampleToTensor(object):
 
     def __call__(self, sample):
         image, label = sample
-
         # swap color axis because
         # numpy image: H x W x C
         # torch image: C X H X W
@@ -56,7 +55,6 @@ class ToTensor(object):
     """Convert ndarrays to Tensors."""
 
     def __call__(self, image):
-
         # swap color axis because
         # numpy image: H x W x C
         # torch image: C X H X W
