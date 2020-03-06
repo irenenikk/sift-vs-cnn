@@ -49,11 +49,11 @@ def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, 
             loss.backward()
             optimiser.step()
             running_loss += loss.item()
-            scheduler.step()
             if (i+1) % 100 == 0:
                 print('[%d, %5d] loss: %.3f' %
                     (epoch + 1, i + 1, running_loss / 100))
                 running_loss = 0.0
+        scheduler.step()
         if (epoch + 1) % 2:
             save_checkpoint(model, epoch, optimiser, checkpoint_file)
         # evaluate after each epoch
@@ -87,7 +87,7 @@ def run_transfer_learning(trainloader, evalloader, last_layer_size, resume, epoc
     neural_net = PretrainedImagenet.get_resnet_feature_extractor_for_transfer(last_layer_size)
     neural_net.to(device)
     criterion = nn.CrossEntropyLoss()
-    optimiser = optim.SGD(neural_net.fc.parameters(), lr=0.001, momentum=0.9)
+    optimiser = optim.SGD(neural_net.fc.parameters(), lr=0.01, momentum=0.9)
     scheduler = lr_scheduler.StepLR(optimiser, step_size=5, gamma=0.1)
     train_neural_net(neural_net, 'data_pipeline/saved_models/transferred_extractor', trainloader, evalloader, criterion, optimiser, scheduler, epochs=epochs, resume=resume)
 
