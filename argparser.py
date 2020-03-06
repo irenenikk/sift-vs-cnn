@@ -10,4 +10,5 @@ def get_argparser():
                         help="The path to the file with development indices")
     parser.add_argument("-s", "--species-file", type=str, default="data/species.txt",
                         help="The path to the file with mappings from index to species name")
+    parser.add_argument("-sift-f", "--sift-feature-size", type=int, help="Define the feature size for SIFT")
     return parser

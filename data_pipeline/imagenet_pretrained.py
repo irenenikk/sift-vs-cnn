@@ -8,7 +8,7 @@ import torch.nn as nn
 from PIL import Image
 import pickle
 from sklearn.decomposition import PCA
-from utils import ToTensor()
+from utils import ToTensor
 
 class PretrainedImagenet(Dataset):
 

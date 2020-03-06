@@ -31,12 +31,9 @@ if __name__ == '__main__':
     label_i = 1
     training_labels = training_indices.iloc[:, label_i]
     training_images = read_images(args.image_root, training_indices, N, gray=False)
-    #training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, 64, label_1)
-    #development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, 64, labeL_1)
-    #run_transfer_learning(training_butterfly_dataloader, development_butterfly_dataloader, training_indices.iloc[:, 1].nunique(), resume=False, epochs=100)
-    #sift_dataloader = get_sift_dataloader(training_images[:N], training_labels[:N], 'features/sift_features', 32, feature_size=100)
-    #hsv_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_hsv', 32, 'hsv', feature_size=100)
-    #ycrcb_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_ycrcb', 32, 'YCrCb', feature_size=100)
-    bgr_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_bgr', 32, 'bgr', feature_size=100)
+    sift_dataloader = get_sift_dataloader(training_images[:N], training_labels[:N], 'features/sift_features', 32, feature_size=args.sift_feature_size)
+    hsv_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_hsv', 32, 'hsv', feature_size=args.sift_feature_size)
+    ycrcb_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_ycrcb', 32, 'YCrCb', feature_size=args.sift_feature_size)
+    bgr_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_bgr', 32, 'bgr', feature_size=args.sift_feature_size)
     #train_neural_net(butterfly_dataloader)
     #imagenet_feature_dataloader = get_pretrained_imagenet_dataloader(training_images, training_labels[:n], 32, 'features/imagenet_features_'+str(n))
