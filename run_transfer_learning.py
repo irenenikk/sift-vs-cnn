@@ -20,4 +20,4 @@ if __name__ == '__main__':
     label_i = 1
     training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, 64, label_i)
     development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, 64, label_i)
-    run_transfer_learning(training_butterfly_dataloader, development_butterfly_dataloader, training_indices.iloc[:, 1].nunique(), resume=False, epochs=100)
+    run_transfer_learning(training_butterfly_dataloader, development_butterfly_dataloader, training_indices.iloc[:, 1].nunique(), resume=False, epochs=20)

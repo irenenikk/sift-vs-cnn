@@ -1,5 +1,7 @@
 import cv2 as cv
 import os
+import torch
+from skimage import transform
 
 def read_images(root_path, indices, N=None, gray=True):
     print('Reading images from ', root_path)

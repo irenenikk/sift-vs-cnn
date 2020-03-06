@@ -1,12 +1,11 @@
+import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from skimage import transform
 from .butterfly_dataset import ButterflyDataset
 from .sift_dataset import SIFTDataset
 from .imagenet_pretrained import PretrainedImagenet
 from .coloured_sift_dataset import ColouredSIFTDataset
-import torch
-from utils import Rescale, SampleToTensor
+from .utils import Rescale, SampleToTensor
 
 def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, label_i, grey=False, length=None):
     butterfly_dataset = ButterflyDataset(indices_file=index_file,
