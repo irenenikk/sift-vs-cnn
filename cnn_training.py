@@ -80,13 +80,21 @@ def evaluate_model_accuracy(model, evalloader, criterion):
     loss /=  len(evalloader)
     return loss, acc
 
+def train_classifier(neural_net, params, trainloader, evalloader, resume, epochs):
+    criterion = nn.CrossEntropyLoss()
+    optimiser = optim.SGD(params, lr=0.01, momentum=0.9)
+    scheduler = lr_scheduler.StepLR(optimiser, step_size=5, gamma=0.1)
+    train_neural_net(neural_net, 'data_pipeline/saved_models/transfer_learning_checkpoint', trainloader, \
+                        evalloader, criterion, optimiser, scheduler, epochs=epochs, resume=resume)
+
 def run_transfer_learning(trainloader, evalloader, last_layer_size, resume, epochs):
     neural_net = PretrainedImagenet.get_resnet_feature_extractor_for_transfer(last_layer_size)
     neural_net.to(device)
-    criterion = nn.CrossEntropyLoss()
-    optimiser = optim.SGD(neural_net.fc.parameters(), lr=0.01, momentum=0.9)
-    scheduler = lr_scheduler.StepLR(optimiser, step_size=5, gamma=0.1)
-    train_neural_net(neural_net, 'data_pipeline/saved_models/transfer_learning_checkpoint', trainloader, evalloader, criterion, optimiser, scheduler, epochs=epochs, resume=resume)
+    train_classifier(neural_net, neural_net.fc.parameters(), trainloader, evalloader, resume, epochs)
+
+def run_baseline_training(neural_net, trainloader, evalloader, resume, epochs):
+    neural_net.to(device)
+    train_classifier(neural_net, neural_net.parameters(), trainloader, evalloader, resume, epochs)
 
 def find_hyperparameters(training_images, training_labels):
     net = NeuralNetClassifier(

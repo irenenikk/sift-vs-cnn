@@ -7,11 +7,11 @@ from data_pipeline.dataloaders import get_butterfly_dataloader, \
 import pandas as pd
 from data_pipeline.utils import read_images
 from torch.utils.data import DataLoader
-from train_cnn import train_neural_net, find_hyperparameters
+from cnn_training import train_neural_net, find_hyperparameters
 from argparser import get_argparser
 from PIL import Image
 from torchvision import transforms
-from train_cnn import run_transfer_learning
+from cnn_training import run_transfer_learning
 
 
 def find_baseline_hyperparameters(training_images, training_labels):
