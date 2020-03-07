@@ -21,7 +21,7 @@ def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, l
     dataloader = DataLoader(butterfly_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
-def get_sift_dataloader(images, labels, feature_path, batch_size, feature_size=1000):
+def get_sift_dataloader(images, labels, feature_path, batch_size, feature_size):
     sift_dataset = SIFTDataset(images, labels, feature_path, feature_size)
     dataloader = DataLoader(sift_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
@@ -31,7 +31,7 @@ def get_coloured_sift_dataloader(images, labels, feature_path, batch_size, colou
     dataloader = DataLoader(sift_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
-def get_pretrained_imagenet_dataloader(images, labels, batch_size, feature_path, reduced_dims=None, transfer_learned=False):
-    imagenet_dataset = PretrainedImagenet(images, labels, feature_path, reduced_dims, transfer_learned)
+def get_pretrained_imagenet_dataloader(images, labels, label_amount, batch_size, feature_path, extractor_path, reduced_dims=None):
+    imagenet_dataset = PretrainedImagenet(images, labels, label_amount, feature_path, extractor_path, reduced_dims)
     dataloader = DataLoader(imagenet_dataset, batch_size=batch_size, shuffle=True)
     return dataloader

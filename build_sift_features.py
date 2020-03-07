@@ -2,7 +2,6 @@ import os
 import cv2 as cv
 from data_pipeline.dataloaders import get_butterfly_dataloader, \
                                         get_sift_dataloader, \
-                                        get_pretrained_imagenet_dataloader, \
                                         get_coloured_sift_dataloader
 import pandas as pd
 from data_pipeline.utils import read_images
@@ -35,5 +34,3 @@ if __name__ == '__main__':
     hsv_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_hsv', 32, 'hsv', feature_size=args.sift_feature_size)
     ycrcb_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_ycrcb', 32, 'YCrCb', feature_size=args.sift_feature_size)
     bgr_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_bgr', 32, 'bgr', feature_size=args.sift_feature_size)
-    #train_neural_net(butterfly_dataloader)
-    #imagenet_feature_dataloader = get_pretrained_imagenet_dataloader(training_images, training_labels[:n], 32, 'features/imagenet_features_'+str(n))

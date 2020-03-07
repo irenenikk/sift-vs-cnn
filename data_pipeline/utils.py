@@ -2,6 +2,7 @@ import cv2 as cv
 import os
 import torch
 from skimage import transform
+import numpy as np
 
 def read_images(root_path, indices, N=None, gray=True):
     print('Reading images from ', root_path)
@@ -58,5 +59,5 @@ class ToTensor(object):
         # swap color axis because
         # numpy image: H x W x C
         # torch image: C X H X W
-        image = image.transpose((2, 0, 1))
-        return image
+        image = np.array(image).transpose((2, 0, 1))
+        return torch.from_numpy(image).float()

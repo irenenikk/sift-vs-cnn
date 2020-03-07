@@ -1,13 +1,8 @@
 import os
 import cv2 as cv
-from data_pipeline.dataloaders import get_butterfly_dataloader, \
-                                        get_sift_dataloader, \
-                                        get_pretrained_imagenet_dataloader, \
-                                        get_coloured_sift_dataloader
+from data_pipeline.dataloaders import get_butterfly_dataloader
 import pandas as pd
-from data_pipeline.utils import read_images
 from models.baseline_cnn import BaselineCNN
-from torch.utils.data import DataLoader
 from cnn_training import run_baseline_training, find_hyperparameters
 from argparser import get_argparser
 from PIL import Image
@@ -33,5 +28,3 @@ if __name__ == '__main__':
     development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, batch_size, label_i)
     baseline_cnn = BaselineCNN(batch_size=batch_size)
     run_baseline_training(baseline_cnn, training_butterfly_dataloader, development_butterfly_dataloader, resume=False, epochs=50)
-    
-

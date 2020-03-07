@@ -27,6 +27,7 @@ def save_checkpoint(model, epoch, optimiser, model_filepath):
 def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, optimiser, scheduler, epochs=20, resume=True):
     # GPU Stuff
     epoch = 0
+    print_interval = 50
     if resume:
         print('Loading checkpoint from', model_filepath)
         checkpoint = torch.load(model_filepath, map_location=device)
@@ -48,9 +49,9 @@ def train_neural_net(model, model_filepath, trainloader, evalloader, criterion, 
             loss.backward()
             optimiser.step()
             running_loss += loss.item()
-            if (i+1) % 100 == 0:
+            if (i+1) % print_interval == 0:
                 print('[%d, %5d] loss: %.3f' %
-                    (epoch + 1, i + 1, running_loss / 100))
+                    (epoch + 1, i + 1, running_loss / print_interval))
                 running_loss = 0.0
         scheduler.step()
         # evaluate after each epoch
@@ -80,21 +81,21 @@ def evaluate_model_accuracy(model, evalloader, criterion):
     loss /=  len(evalloader)
     return loss, acc
 
-def train_classifier(neural_net, params, trainloader, evalloader, resume, epochs):
+def train_classifier(neural_net, params, model_path, trainloader, evalloader, resume, epochs):
     criterion = nn.CrossEntropyLoss()
     optimiser = optim.SGD(params, lr=0.01, momentum=0.9)
     scheduler = lr_scheduler.StepLR(optimiser, step_size=5, gamma=0.1)
-    train_neural_net(neural_net, 'data_pipeline/saved_models/transfer_learning_checkpoint', trainloader, \
+    train_neural_net(neural_net, model_path, trainloader, \
                         evalloader, criterion, optimiser, scheduler, epochs=epochs, resume=resume)
 
-def run_transfer_learning(trainloader, evalloader, last_layer_size, resume, epochs):
-    neural_net = PretrainedImagenet.get_resnet_feature_extractor_for_transfer(last_layer_size)
+def run_transfer_learning(model_name, trainloader, evalloader, last_layer_size, resume, epochs):
+    neural_net = PretrainedImagenet.get_resnet_feature_extractor_for_transfer(model_name, last_layer_size)
     neural_net.to(device)
-    train_classifier(neural_net, neural_net.fc.parameters(), trainloader, evalloader, resume, epochs)
+    train_classifier(neural_net, neural_net.fc.parameters(), 'data_pipeline/saved_models/transfer_learning_checkpoint', trainloader, evalloader, resume, epochs)
 
 def run_baseline_training(neural_net, trainloader, evalloader, resume, epochs):
     neural_net.to(device)
-    train_classifier(neural_net, neural_net.parameters(), trainloader, evalloader, resume, epochs)
+    train_classifier(neural_net, neural_net.parameters(), 'data_pipeline/saved_models/baseline_cnn_checkpoint',trainloader, evalloader, resume, epochs)
 
 def find_hyperparameters(training_images, training_labels):
     net = NeuralNetClassifier(

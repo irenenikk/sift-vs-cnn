@@ -11,4 +11,6 @@ def get_argparser():
     parser.add_argument("-s", "--species-file", type=str, default="data/species.txt",
                         help="The path to the file with mappings from index to species name")
     parser.add_argument("-sift-f", "--sift-feature-size", type=int, help="Define the feature size for SIFT")
+    parser.add_argument("-ex", "--imagenet-extractor-path", type=str, help="Path to model pretrained with Imagenet and trained with transfer learning")
+    parser.add_argument("-m", "--model-name", type=str, help="Model to use in transfer learning")
     return parser
