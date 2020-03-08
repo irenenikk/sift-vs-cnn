@@ -25,16 +25,16 @@ if __name__ == '__main__':
     batch_size = 64
     # normalised bgr
     bgr_training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, batch_size=batch_size, label_i=label_i, color_space='bgr')
-    bgr_development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, batch_size=batch_size, label_i=label_i, , color_space='bgr')
+    bgr_development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, batch_size=batch_size, label_i=label_i, color_space='bgr')
     rgb_cnn = BaselineCNN()
     run_baseline_training(rgb_cnn, 'data_pipeline/saved_models/baseline_cnn_checkpoint_bgr_normalised', bgr_training_butterfly_dataloader, bgr_development_butterfly_dataloader, resume=False, epochs=15)
     # hsv
     hsv_training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, batch_size=batch_size, label_i=label_i, color_space='hsv')
-    hsv_development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, batch_size=batch_size, label_i=label_i, , color_space='hsv')
+    hsv_development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, batch_size=batch_size, label_i=label_i, color_space='hsv')
     hsv_cnn = BaselineCNN()
     run_baseline_training(hsv_cnn, 'data_pipeline/saved_models/baseline_cnn_checkpoint_hsv', hsv_training_butterfly_dataloader, hsv_development_butterfly_dataloader, resume=False, epochs=15)
     # YCrCb
     hsv_training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, batch_size=batch_size, label_i=label_i, color_space='ycrcb')
-    ycrcb_development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, batch_size=batch_size, label_i=label_i, , color_space='ycrcb')
+    ycrcb_development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, batch_size=batch_size, label_i=label_i, color_space='ycrcb')
     ycrcb_cnn = BaselineCNN()
     run_baseline_training(ycrcb_cnn, 'data_pipeline/saved_models/baseline_cnn_checkpoint_ycrcb', ycrcb_training_butterfly_dataloader, ycrcb_development_butterfly_dataloader, resume=False, epochs=15)
