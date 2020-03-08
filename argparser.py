@@ -13,4 +13,5 @@ def get_argparser():
     parser.add_argument("-sift-f", "--sift-feature-size", type=int, help="Define the feature size for SIFT")
     parser.add_argument("-ex", "--imagenet-extractor-path", type=str, help="Path to model pretrained with Imagenet and trained with transfer learning")
     parser.add_argument("-m", "--model-name", type=str, help="Model to use in transfer learning")
+    parser.add_argument("-c", "--cnn-color-space", type=str, default='none', help="Color space to use in baseline CNN training")
     return parser

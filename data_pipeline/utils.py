@@ -76,9 +76,10 @@ def get_all_data_from_loader(dataloader):
 def change_image_colourspace(color_space, image):
     # opencv color order is (blue, green, red)
     transform = None
+    color_space = color_space.lower()
     if color_space == 'hsv':
         transform = lambda image: cv.cvtColor(image, cv.COLOR_BGR2HSV)
-    elif color_space == 'YCrCb':
+    elif color_space == 'ycrcb':
         transform = lambda image: cv.cvtColor(image, cv.COLOR_BGR2YCrCb)
     elif color_space == 'bgr':
         transform = lambda image: self.normalise_rgb_dims(image)

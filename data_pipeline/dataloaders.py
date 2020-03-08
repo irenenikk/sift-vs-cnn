@@ -7,7 +7,7 @@ from .imagenet_pretrained import PretrainedImagenet
 from .coloured_sift_dataset import ColouredSIFTDataset
 from .utils import Rescale, SampleToTensor
 
-def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, label_i, grey=False, length=None):
+def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, label_i, grey=False, length=None, color_space=None):
     butterfly_dataset = ButterflyDataset(indices_file=index_file,
                                         root_dir=image_root,
                                         species_file=species_file,
@@ -17,7 +17,8 @@ def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, l
                                                SampleToTensor()
                                         ]),
                                         length=length,
-                                        label_i=label_i)
+                                        label_i=label_i,
+                                        color_space=color_space)
     dataloader = DataLoader(butterfly_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 

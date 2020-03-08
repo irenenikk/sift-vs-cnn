@@ -93,9 +93,9 @@ def run_transfer_learning(model_name, trainloader, evalloader, last_layer_size, 
     neural_net.to(device)
     train_classifier(neural_net, neural_net.fc.parameters(), 'data_pipeline/saved_models/transfer_learning_checkpoint', trainloader, evalloader, resume, epochs)
 
-def run_baseline_training(neural_net, trainloader, evalloader, resume, epochs):
+def run_baseline_training(neural_net, checkpoint_path, trainloader, evalloader, resume, epochs):
     neural_net.to(device)
-    train_classifier(neural_net, neural_net.parameters(), 'data_pipeline/saved_models/baseline_cnn_checkpoint', trainloader, evalloader, resume, epochs)
+    train_classifier(neural_net, neural_net.parameters(), checkpoint_path, trainloader, evalloader, resume, epochs)
 
 def find_hyperparameters(training_images, training_labels):
     net = NeuralNetClassifier(
