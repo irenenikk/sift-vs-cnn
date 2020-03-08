@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 import pandas as pd
 import os
 import cv2 as cv
-from utils import change_image_colourspace
+from .utils import change_image_colourspace
 
 class ButterflyDataset(Dataset):
     """Butterfly 200 dataset."""

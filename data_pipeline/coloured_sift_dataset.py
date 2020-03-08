@@ -5,7 +5,7 @@ from os import path
 import time
 from sklearn.cluster import MiniBatchKMeans
 import numpy as np
-from utils import change_image_colourspace
+from .utils import change_image_colourspace
 
 class ColouredSIFTDataset(Dataset):
 
