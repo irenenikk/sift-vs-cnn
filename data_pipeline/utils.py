@@ -3,6 +3,7 @@ import os
 import torch
 from skimage import transform
 import numpy as np
+import pandas as pd
 
 def read_images(root_path, indices, N=None, gray=True):
     print('Reading images from ', root_path)
@@ -61,3 +62,11 @@ class ToTensor(object):
         # torch image: C X H X W
         image = np.array(image).transpose((2, 0, 1))
         return torch.from_numpy(image).float()
+
+def get_all_data_from_loader(dataloader):
+    features = torch.FloatTensor()
+    labels = torch.LongTensor()
+    for x, y in dataloader:
+        features = torch.cat((features, x), 0)
+        labels = torch.cat((labels, y), 0)
+    return torch.squeeze(features).numpy(), torch.squeeze(labels).numpy()

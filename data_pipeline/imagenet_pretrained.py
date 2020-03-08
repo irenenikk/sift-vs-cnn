@@ -9,6 +9,7 @@ from PIL import Image
 import pickle
 from sklearn.decomposition import PCA
 from .utils import ToTensor
+from tqdm import tqdm
 
 class PretrainedImagenet(Dataset):
 
@@ -50,12 +51,13 @@ class PretrainedImagenet(Dataset):
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
         # enable GPU
-        feature_extractor = self.load_transfer_learned_extractor()
+        model = self.load_transfer_learned_extractor()
+        feature_extractor = nn.Sequential(*list(model.children())[:-1])
         feature_extractor.eval()
         feature_extractor.to(self.device)
         print('Getting imagenet features for', len(self.images), 'images')
         with torch.no_grad():
-            self.features = [feature_extractor(preprocess(image).unsqueeze(0).to(self.device)) for image in self.images]
+            self.features = [feature_extractor(preprocess(image).unsqueeze(0).to(self.device)) for image in tqdm(self.images)]
         print('Got features for images')
 
     def get_model_name(self):

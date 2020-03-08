@@ -4,3 +4,5 @@ torchvision
 pandas
 numpy
 skorch
+sklearn
+tqdm
