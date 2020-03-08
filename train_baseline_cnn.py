@@ -20,11 +20,10 @@ def find_baseline_hyperparameters(training_images, training_labels):
 if __name__ == '__main__':
     parser = get_argparser()
     args = parser.parse_args()
-    N = 1000
     training_indices = pd.read_csv(args.training_index_file, sep=' ', header=None)
     label_i = 1
     batch_size = 64
-    training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, batch_size, label_i)
-    development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, batch_size, label_i)
+    training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, batch_size=batch_size, label_i=label_i)
+    development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, batch_size=batch_size, label_i=label_i)
     baseline_cnn = BaselineCNN()
     run_baseline_training(baseline_cnn, training_butterfly_dataloader, development_butterfly_dataloader, resume=False, epochs=50)
