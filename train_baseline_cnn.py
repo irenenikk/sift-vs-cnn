@@ -26,5 +26,5 @@ if __name__ == '__main__':
     batch_size = 64
     training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, batch_size, label_i)
     development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, batch_size, label_i)
-    baseline_cnn = BaselineCNN(batch_size=batch_size)
+    baseline_cnn = BaselineCNN()
     run_baseline_training(baseline_cnn, training_butterfly_dataloader, development_butterfly_dataloader, resume=False, epochs=50)

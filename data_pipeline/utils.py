@@ -5,6 +5,8 @@ from skimage import transform
 import numpy as np
 import pandas as pd
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 def read_images(root_path, indices, N=None, gray=True):
     print('Reading images from ', root_path)
     images = []
@@ -64,8 +66,8 @@ class ToTensor(object):
         return torch.from_numpy(image).float()
 
 def get_all_data_from_loader(dataloader):
-    features = torch.FloatTensor()
-    labels = torch.LongTensor()
+    features = torch.FloatTensor().to(device)
+    labels = torch.LongTensor().to(device)
     for x, y in dataloader:
         features = torch.cat((features, x), 0)
         labels = torch.cat((labels, y), 0)
