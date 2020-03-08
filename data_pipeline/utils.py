@@ -73,6 +73,11 @@ def get_all_data_from_loader(dataloader):
         labels = torch.cat((labels, y), 0)
     return torch.squeeze(features).numpy(), torch.squeeze(labels).numpy()
 
+def normalise_rgb_dims(image):
+    # normalisation should reduce sensitivity to lumincance, surface orientation and other conditions
+    # as per Verma et al.
+    return (image / np.expand_dims(image.sum(-1), axis=2)*255).astype('uint8')
+
 def change_image_colourspace(color_space, image):
     # opencv color order is (blue, green, red)
     transform = None
@@ -82,7 +87,7 @@ def change_image_colourspace(color_space, image):
     elif color_space == 'ycrcb':
         transform = lambda image: cv.cvtColor(image, cv.COLOR_BGR2YCrCb)
     elif color_space == 'bgr':
-        transform = lambda image: self.normalise_rgb_dims(image)
+        transform = lambda image: normalise_rgb_dims(image)
     elif color_space == 'obgr':
         raise ValueError('Color space', color_space, 'hasn\'t been implemented yet')
     else:

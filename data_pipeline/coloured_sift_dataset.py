@@ -28,12 +28,6 @@ class ColouredSIFTDataset(Dataset):
             pickle.dump(self.features, open(full_feature_path, "wb"))
             print('Saving SIFT features to', full_feature_path)
 
-    @staticmethod
-    def normalise_rgb_dims(image):
-        # normalisation should reduce sensitivity to lumincance, surface orientation and other conditions
-        # as per Verma et al.
-        return (image / np.expand_dims(image.sum(-1), axis=2)*255).astype('uint8')
-
     def convert_images_to_colorspace(self, color_space):
         self.images = [change_image_colourspace(image, color_space) for image in self.images]
 
