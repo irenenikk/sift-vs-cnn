@@ -5,6 +5,7 @@ from os import path
 import time
 from sklearn.cluster import MiniBatchKMeans
 import numpy as np
+from utils import change_image_colourspace
 
 class ColouredSIFTDataset(Dataset):
 
@@ -15,7 +16,7 @@ class ColouredSIFTDataset(Dataset):
         self.labels = labels
         assert len(self.images) == len(self.labels)
         self.gray_images = [cv.cvtColor(image, cv.COLOR_BGR2GRAY) for image in self.images]
-        self.change_image_colourspace(color_space)
+        self.convert_images_to_colorspace(color_space)
         curr_dir = path.dirname(path.realpath(__file__))
         full_feature_path = path.join(curr_dir, feature_path + '_' + str(vocabulary_size))
         if path.exists(full_feature_path):
@@ -33,21 +34,8 @@ class ColouredSIFTDataset(Dataset):
         # as per Verma et al.
         return (image / np.expand_dims(image.sum(-1), axis=2)*255).astype('uint8')
 
-    def change_image_colourspace(self, color_space):
-        # opencv color order is (blue, green, red)
-        transform = None
-        if color_space == 'hsv':
-            transform = lambda image: cv.cvtColor(image, cv.COLOR_BGR2HSV)
-        elif color_space == 'YCrCb':
-            transform = lambda image: cv.cvtColor(image, cv.COLOR_BGR2YCrCb)
-        elif color_space == 'bgr':
-            transform = lambda image: self.normalise_rgb_dims(image)
-        elif color_space == 'obgr':
-            raise ValueError('Color space', color_space, 'hasn\'t been implemented yet')
-        else:
-            raise ValueError('Color space', color_space, 'not supported')
-        self.images = [transform(image) for image in self.images]
-
+    def convert_images_to_colorspace(self, color_space):
+        self.images = [change_image_colourspace(image, color_space) for image in self.images]
 
     def get_coloured_descriptors(self, image, gray_image, sift):
         # the features from different image dimensions are concatenated together

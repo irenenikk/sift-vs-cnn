@@ -3,12 +3,12 @@ from torch.utils.data import Dataset
 import pandas as pd
 import os
 import cv2 as cv
-
+from utils import change_image_colourspace
 
 class ButterflyDataset(Dataset):
     """Butterfly 200 dataset."""
 
-    def __init__(self, indices_file, species_file, root_dir, grey, label_i, transform=None, length=None):
+    def __init__(self, indices_file, species_file, root_dir, grey, label_i, color_space=None, transform=None, length=None):
         """
         Args:
             indice_file (string): Path to the csv file split annotations.
@@ -23,6 +23,7 @@ class ButterflyDataset(Dataset):
         self.grey = grey
         self.length = length if length is not None else len(self.indices)
         self.label_i = label_i
+        self.color_space = color_space
 
     def __len__(self):
         return self.length
@@ -42,7 +43,8 @@ class ButterflyDataset(Dataset):
         if self.grey:
             image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         sample = (image, label_index)
-
+        if self.color_space is not None:
+            image = change_image_colourspace(self.color_space, image)
         if self.transform:
             sample = self.transform(sample)
 

@@ -72,3 +72,18 @@ def get_all_data_from_loader(dataloader):
         features = torch.cat((features, x), 0)
         labels = torch.cat((labels, y), 0)
     return torch.squeeze(features).numpy(), torch.squeeze(labels).numpy()
+
+def change_image_colourspace(color_space, image):
+    # opencv color order is (blue, green, red)
+    transform = None
+    if color_space == 'hsv':
+        transform = lambda image: cv.cvtColor(image, cv.COLOR_BGR2HSV)
+    elif color_space == 'YCrCb':
+        transform = lambda image: cv.cvtColor(image, cv.COLOR_BGR2YCrCb)
+    elif color_space == 'bgr':
+        transform = lambda image: self.normalise_rgb_dims(image)
+    elif color_space == 'obgr':
+        raise ValueError('Color space', color_space, 'hasn\'t been implemented yet')
+    else:
+        raise ValueError('Color space', color_space, 'not supported')
+    return transform(image)
