@@ -76,6 +76,8 @@ def get_all_data_from_loader(dataloader):
 def normalise_rgb_dims(image):
     # normalisation should reduce sensitivity to lumincance, surface orientation and other conditions
     # as per Verma et al.
+    #if image.sum(-1) == 0:
+    #    import ipdb; ipdb.set_trace()
     return (image / np.expand_dims(image.sum(-1), axis=2)*255).astype('uint8')
 
 def change_image_colourspace(color_space, image):

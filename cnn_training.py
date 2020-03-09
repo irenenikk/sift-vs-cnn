@@ -88,10 +88,10 @@ def train_classifier(neural_net, params, model_path, trainloader, evalloader, re
     train_neural_net(neural_net, model_path, trainloader, \
                         evalloader, criterion, optimiser, scheduler, epochs=epochs, resume=resume)
 
-def run_transfer_learning(model_name, trainloader, evalloader, last_layer_size, resume, epochs):
+def run_transfer_learning(model_name, checkpoint_path, trainloader, evalloader, last_layer_size, resume, epochs):
     neural_net = PretrainedImagenet.get_resnet_feature_extractor_for_transfer(model_name, last_layer_size)
     neural_net.to(device)
-    train_classifier(neural_net, neural_net.fc.parameters(), 'data_pipeline/saved_models/transfer_learning_checkpoint', trainloader, evalloader, resume, epochs)
+    train_classifier(neural_net, neural_net.fc.parameters(), checkpoint_path, trainloader, evalloader, resume, epochs)
 
 def run_baseline_training(neural_net, checkpoint_path, trainloader, evalloader, resume, epochs):
     neural_net.to(device)
