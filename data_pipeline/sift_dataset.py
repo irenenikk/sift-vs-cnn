@@ -13,7 +13,7 @@ class SIFTDataset(Dataset):
         self.labels = labels
         assert len(self.images) == len(self.labels)
         curr_dir = path.dirname(path.realpath(__file__))
-        full_feature_path = path.join(curr_dir, feature_path + '_' + str(vocabulary_size))
+        full_feature_path = path.join(curr_dir, feature_path + '_' + str(len(images)) + '_' + str(vocabulary_size))
         if path.exists(full_feature_path):
             print('Loading SIFT features from', full_feature_path)
             self.features = pickle.load(open(full_feature_path, "rb"))
