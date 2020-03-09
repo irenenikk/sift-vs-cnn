@@ -45,7 +45,6 @@ class PretrainedImagenet(Dataset):
 
     def get_features_for_images(self):
         preprocess = transforms.Compose([
-            transforms.ToPILImage(),
             Rescale(256),
             ToTensor(grey=False),
             # this is obligatory when using preatrained models from pytorch
