@@ -26,7 +26,7 @@ def get_argparser():
     parser.add_argument("-b", "--batch-size", default=64, type=int, help="Batch size to use in training.")
     parser.add_argument("-e", "--epochs", default=15, type=int, help="Number of training epochs.")
     parser.add_argument("-r", "--resume", default=False, action="store_true", help="If training should be resumed from model checkpoint.")
-    parser.add_argument("-check", "--model-checkpoint", type="str", default="data_pipeline/saved_models/transfer_learning_checkpoint", help="Model checkpoint.")
+    parser.add_argument("-check", "--model-checkpoint", type=str, default="data_pipeline/saved_models/transfer_learning_checkpoint", help="Model checkpoint.")
     return parser
 
 if __name__ == '__main__':
