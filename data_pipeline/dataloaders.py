@@ -14,7 +14,7 @@ def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, l
                                         grey=grey,
                                         transform=transforms.Compose([
                                                Rescale(256),
-                                               SampleToTensor()
+                                               SampleToTensor(grey)
                                         ]),
                                         length=length,
                                         label_i=label_i,

@@ -45,12 +45,18 @@ class Rescale(object):
 class SampleToTensor(object):
     """Convert ndarrays in sample to Tensors."""
 
+    def __init__(self, grey):
+        self.grey = grey
+
     def __call__(self, sample):
         image, label = sample
-        # swap color axis because
-        # numpy image: H x W x C
-        # torch image: C X H X W
-        image = image.transpose((2, 0, 1))
+        if self.grey:
+            image = np.expand_dims(image, axis=0)
+        else:
+            # swap color axis because
+            # numpy image: H x W x C
+            # torch image: C X H X W
+            image = image.transpose((2, 0, 1))
         # the dataset labels are indexed from one
         label_index = label - 1
         return torch.from_numpy(image).float(), label_index
