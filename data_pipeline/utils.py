@@ -4,6 +4,7 @@ import torch
 from skimage import transform
 import numpy as np
 import pandas as pd
+import torch.nn as nn
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -25,6 +26,22 @@ def read_images(root_path, indices, N=None, grey=True):
 # https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
 
 class Rescale(object):
+    """Rescale the image in a sample to a given size.
+
+    Args:
+        output_size (tuple or int): Desired output size. If tuple, output is
+            matched to output_size. If int, smaller of image edges is matched
+            to output_size keeping aspect ratio the same.
+    """
+
+    def __init__(self, output_size):
+        assert isinstance(output_size, (int, tuple))
+        self.output_size = output_size
+
+    def __call__(self, image):
+        return transform.resize(image, (self.output_size, self.output_size))
+
+class SampleRescale(object):
     """Rescale the image in a sample to a given size.
 
     Args:
@@ -64,11 +81,17 @@ class SampleToTensor(object):
 class ToTensor(object):
     """Convert ndarrays to Tensors."""
 
+    def __init__(self, grey):
+        self.grey = grey
+
     def __call__(self, image):
-        # swap color axis because
-        # numpy image: H x W x C
-        # torch image: C X H X W
-        image = np.array(image).transpose((2, 0, 1))
+        if self.grey:
+            image = np.expand_dims(image, axis=0)
+        else:
+            # swap color axis because
+            # numpy image: H x W x C
+            # torch image: C X H X W
+            image = np.array(image).transpose((2, 0, 1))
         return torch.from_numpy(image).float()
 
 def get_all_data_from_loader(dataloader):
@@ -104,3 +127,12 @@ def change_image_colourspace(color_space, image):
     else:
         raise ValueError('Color space', color_space, 'not supported')
     return transform(image)
+
+# https://discuss.pytorch.org/t/size-mismatch-after-loading-saved-model-please-explain/21295/7
+class Flatten(nn.Module):
+    def __init__(self, flattened_size):
+        super(Flatten, self).__init__()
+        self.flattened_size = flattened_size
+        
+    def forward(self, x):
+        return x.view(-1, self.flattened_size)

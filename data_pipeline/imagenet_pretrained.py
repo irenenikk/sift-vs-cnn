@@ -97,9 +97,10 @@ class PretrainedImagenet(Dataset):
         for param in resnet.parameters():
             param.requires_grad = False
         features = resnet.fc.in_features
-        print('Creating a resnet with linear layers of shape (', features, ',', features//2, ') and (', features/2, ',', labels_amount, ')')
-        resnet.fc = nn.Linear(features, features//2)
-        resnet.fc2 = nn.Linear(features//2, labels_amount)
+        mid_features = features//2
+        print('Creating a resnet with linear layers of shape (', features, ',', mid_features, ') and (', mid_features, ',', labels_amount, ')')
+        resnet.fc = nn.Linear(features, mid_features)
+        resnet.fc2 = nn.Linear(mid_features, labels_amount)
         return resnet
         
     def __len__(self):
