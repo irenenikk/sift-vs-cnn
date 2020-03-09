@@ -27,12 +27,13 @@ def get_argparser():
     parser.add_argument("-e", "--epochs", default=15, type=int, help="Number of training epochs.")
     parser.add_argument("-r", "--resume", default=False, action="store_true", help="If training should be resumed from model checkpoint.")
     parser.add_argument("-check", "--model-checkpoint", type=str, default="data_pipeline/saved_models/transfer_learning_checkpoint", help="Model checkpoint.")
+    parser.add_argument("-l", "--label-index", required=True, type=int, help="Which index to use as the label, between 1 and 5. Use 1 o classify species, 5 to classify families.")
     return parser
 
 if __name__ == '__main__':
     parser = get_argparser()
     args = parser.parse_args()
     training_indices = pd.read_csv(args.training_index_file, sep=' ', header=None)
-    training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, args.batch_size, args.label_i)
-    development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, args.batch_size, args.label_i)
-    run_transfer_learning(args.model_name, args.model_checkpoint, training_butterfly_dataloader, development_butterfly_dataloader, training_indices.iloc[:, args.label_i].nunique(), resume=args.resume, epochs=args.epochs)
+    training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, args.batch_size, args.label_index)
+    development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, args.batch_size, args.label_index)
+    run_transfer_learning(args.model_name, args.model_checkpoint, training_butterfly_dataloader, development_butterfly_dataloader, training_indices.iloc[:, args.label_index].nunique(), resume=args.resume, epochs=args.epochs)
