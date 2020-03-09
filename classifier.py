@@ -46,7 +46,7 @@ if __name__ == "__main__":
                                                                         batch_size, args.imagenet_features, args.imagenet_extractor_path)
     imagenet_features, imagenet_labels = get_all_data_from_loader(imagenet_feature_dataloader)
     #baseline_cnn_feature_dataloader = get_baseline_cnn_dataloader(training_images, training_labels[:N], training_labels.nunique(), \
-                                                                        batch_size, args.cnn_features, args.baseline_cnn_path, args.cnn_color_space, args.cnn_grey)
+    #                                                                    batch_size, args.cnn_features, args.baseline_cnn_path, args.cnn_color_space, args.cnn_grey)
     #baseline_cnn_features, baseline_cnn_labels = get_all_data_from_loader(baseline_cnn_feature_dataloader)
     #sift_dataloader = get_sift_dataloader(training_images, training_labels[:N], args.sift_feature_path, 32, feature_size=args.sift_feature_size)
     #sift_features, sift_labels = get_all_data_from_loader(sift_dataloader)
