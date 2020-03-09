@@ -7,7 +7,7 @@ from os import path
 import torch.nn as nn
 from PIL import Image
 from sklearn.decomposition import PCA
-from .utils import ToTensor
+from .utils import ToTensor, Rescale
 from tqdm import tqdm
 import pickle
 
@@ -46,7 +46,7 @@ class PretrainedImagenet(Dataset):
     def get_features_for_images(self):
         preprocess = transforms.Compose([
             transforms.ToPILImage(),
-            transforms.Resize(256),
+            Rescale(256),
             ToTensor(),
             # this is obligatory when using preatrained models from pytorch
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
