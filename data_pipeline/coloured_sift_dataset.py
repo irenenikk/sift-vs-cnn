@@ -15,7 +15,7 @@ class ColouredSIFTDataset(Dataset):
             raise ValueError('Images need to have colour to form a coloured SIFT dataset')
         self.labels = labels
         assert len(self.images) == len(self.labels)
-        self.gray_images = [cv.cvtColor(image, cv.COLOR_BGR2GRAY) for image in self.images]
+        self.grey_images = [cv.cvtColor(image, cv.COLOR_BGR2GRAY) for image in self.images]
         self.convert_images_to_colorspace(color_space)
         curr_dir = path.dirname(path.realpath(__file__))
         full_feature_path = path.join(curr_dir, feature_path + '_' + str(vocabulary_size))
@@ -31,9 +31,9 @@ class ColouredSIFTDataset(Dataset):
     def convert_images_to_colorspace(self, color_space):
         self.images = [change_image_colourspace(image, color_space) for image in self.images]
 
-    def get_coloured_descriptors(self, image, gray_image, sift):
+    def get_coloured_descriptors(self, image, grey_image, sift):
         # the features from different image dimensions are concatenated together
-        keypoints = sift.detect(gray_image)
+        keypoints = sift.detect(grey_image)
         concat_desc = None
         for dim in range(3):
             color_dim_image = image[:, :, dim]
@@ -48,9 +48,9 @@ class ColouredSIFTDataset(Dataset):
         print('Building BOW vocabulary for', len(self.images), 'images')
         bow_kmeans_trainer = cv.BOWKMeansTrainer(vocabulary_size)
         sift = cv.xfeatures2d.SIFT_create()
-        for image, gray_image in zip(self.images, self.gray_images):
+        for image, grey_image in zip(self.images, self.grey_images):
             # the features from different image dimensions are concatenated together
-            concat_desc = self.get_coloured_descriptors(image, gray_image, sift)
+            concat_desc = self.get_coloured_descriptors(image, grey_image, sift)
             bow_kmeans_trainer.add(concat_desc)
         print('Training Kmeans with size', vocabulary_size)
         start = time.time()

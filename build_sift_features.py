@@ -10,7 +10,7 @@ from cnn_training import train_neural_net, find_hyperparameters
 from PIL import Image
 from torchvision import transforms
 from cnn_training import run_transfer_learning
-
+import argparse
 
 def get_argparser():
     parser = argparse.ArgumentParser(description='Obtain SIFT features for training set')
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     N = args.no_images if N < len(training_indices) else len(training_indices)
     label_i = 1
     training_labels = training_indices.iloc[:, label_i]
-    training_images = read_images(args.image_root, training_indices, N, gray=False)
+    training_images = read_images(args.image_root, training_indices, N, grey=False)
     sift_dataloader = get_sift_dataloader(training_images[:N], training_labels[:N], 'features/sift_features', 32, feature_size=args.sift_feature_size)
     hsv_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_hsv', 32, 'hsv', feature_size=args.sift_feature_size)
     ycrcb_sift_dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_ycrcb', 32, 'YCrCb', feature_size=args.sift_feature_size)

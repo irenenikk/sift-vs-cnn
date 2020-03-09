@@ -7,13 +7,13 @@ import pandas as pd
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-def read_images(root_path, indices, N=None, gray=True):
+def read_images(root_path, indices, N=None, grey=True):
     print('Reading images from ', root_path)
     images = []
     for index in range(len(indices)):
         image_path = os.path.join(root_path, indices.iloc[index, 0])
         image = cv.imread(image_path)
-        if gray:
+        if grey:
             image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         images.append(image)
         if N is not None and index == N-1:

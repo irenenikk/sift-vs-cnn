@@ -43,7 +43,7 @@ class ButterflyDataset(Dataset):
         if self.grey:
             image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         sample = (image, label_index)
-        if self.color_space is not None:
+        if not self.grey and self.color_space is not None:
             image = change_image_colourspace(self.color_space, image)
         if self.transform:
             sample = self.transform(sample)

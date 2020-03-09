@@ -1,4 +1,5 @@
 import os
+import argparse
 import cv2 as cv
 from data_pipeline.dataloaders import get_butterfly_dataloader
 import pandas as pd
@@ -17,14 +18,13 @@ def get_argparser():
                         help="The path to the file with development indices")
     parser.add_argument("-s", "--species-file", type=str, default="data/species.txt",
                         help="The path to the file with mappings from index to species name")
-    parser.add_argument("-sift-f", "--sift-feature-size", required=True, type=int, help="The feature size for SIFT")
-    parser.add_argument("-N", "--no-images", required=True, type=int, help="The amount of images to use in building features")
     parser.add_argument("-l", "--label-index", required=True, type=int, help="Which index to use as the label, between 1 and 5. Use 1 o classify species, 5 to classify families.")
     parser.add_argument("-b", "--batch-size", default=64, type=int, help="Batch size to use in training.")
     parser.add_argument("-e", "--epochs", default=15, type=int, help="Number of training epochs.")
     parser.add_argument("-r", "--resume", default=False, action="store_true", help="If training should be resumed from model checkpoint.")
     parser.add_argument("-check", "--model-checkpoint", type="str", default="data_pipeline/saved_models/baseline_cnn_checkpoint", help="Model checkpoint.")
     parser.add_argument("-color", "--color-space", type="str", default=None, help="Color space to use.")
+    parser.add_argument("-g", "--grey", default=False, action="store_true", help="Use grey images in training.")
     return parser
 
 def find_baseline_hyperparameters(training_images, training_labels):
