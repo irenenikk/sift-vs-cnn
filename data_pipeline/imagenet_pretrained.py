@@ -9,6 +9,7 @@ from PIL import Image
 from sklearn.decomposition import PCA
 from .utils import ToTensor
 from tqdm import tqdm
+import pickle
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -24,12 +25,11 @@ class PretrainedImagenet(Dataset):
         full_feature_path = path.join(curr_dir, feature_path)
         if path.exists(full_feature_path):
             print('Loading pretrained Imagenet features from', full_feature_path)
-            import ipdb; ipdb.set_trace()
             self.features = torch.load(full_feature_path, map_location=device)
         else:
             self.get_features_for_images()
             print('Saving pretrained Imagenet features to', full_feature_path)
-            torch.save(self.features, full_feature_path, "wb")
+            torch.save(self.features, full_feature_path)
         if reduced_dims is not None:
             reduced_features_path = path.join(curr_dir, feature_path + "_reduced_" + reduced_dims)
             if path.exists(reduced_features_path):
