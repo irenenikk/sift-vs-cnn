@@ -6,10 +6,11 @@ import json
 from os import path
 import torch.nn as nn
 from PIL import Image
-import pickle
 from sklearn.decomposition import PCA
 from .utils import ToTensor
 from tqdm import tqdm
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class PretrainedImagenet(Dataset):
 
@@ -19,16 +20,16 @@ class PretrainedImagenet(Dataset):
         self.label_amount = label_amount
         curr_dir = path.dirname(path.realpath(__file__))
         self.extractor_path = path.join(curr_dir, extractor_path)
-        self.device =  torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         assert len(self.images) == len(self.labels)
         full_feature_path = path.join(curr_dir, feature_path)
         if path.exists(full_feature_path):
             print('Loading pretrained Imagenet features from', full_feature_path)
-            self.features = pickle.load(open(full_feature_path, "rb"))
+            import ipdb; ipdb.set_trace()
+            self.features = torch.load(full_feature_path, map_location=device)
         else:
             self.get_features_for_images()
             print('Saving pretrained Imagenet features to', full_feature_path)
-            pickle.dump(self.features, open(full_feature_path, "wb"))
+            torch.save(self.features, full_feature_path, "wb")
         if reduced_dims is not None:
             reduced_features_path = path.join(curr_dir, feature_path + "_reduced_" + reduced_dims)
             if path.exists(reduced_features_path):
@@ -54,10 +55,10 @@ class PretrainedImagenet(Dataset):
         model = self.load_transfer_learned_extractor()
         feature_extractor = nn.Sequential(*list(model.children())[:-1])
         feature_extractor.eval()
-        feature_extractor.to(self.device)
+        feature_extractor.to(device)
         print('Getting imagenet features for', len(self.images), 'images')
         with torch.no_grad():
-            self.features = [feature_extractor(preprocess(image).unsqueeze(0).to(self.device)) for image in tqdm(self.images)]
+            self.features = [feature_extractor(preprocess(image).unsqueeze(0).to(device)) for image in tqdm(self.images)]
         print('Got features for images')
 
     def get_model_name(self):
@@ -73,7 +74,7 @@ class PretrainedImagenet(Dataset):
         if not path.exists(self.extractor_path):
             ValueError('No feature extractor found trained with transfer learning. Please train the model.')
         print('Found feature extractor trained with transfer learning')
-        checkpoint = torch.load(self.extractor_path, map_location=torch.device(self.device))
+        checkpoint = torch.load(self.extractor_path, map_location=torch.device(device))
         feature_extractor.load_state_dict(checkpoint['model_state_dict'])
         feature_extractor.eval()
         return feature_extractor

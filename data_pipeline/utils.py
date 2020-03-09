@@ -84,7 +84,10 @@ def normalise_rgb_dims(image):
     # as per Verma et al.
     #if image.sum(-1) == 0:
     #    import ipdb; ipdb.set_trace()
-    return (image / np.expand_dims(image.sum(-1), axis=2)*255).astype('uint8')
+    normaliser = np.expand_dims(image.sum(-1), axis=2)
+    # avoid dividing by zero in case all dimensions are 0
+    normaliser[normaliser == 0] = 1
+    return ((image / normaliser)*255).astype('uint8')
 
 def change_image_colourspace(color_space, image):
     # opencv color order is (blue, green, red)
