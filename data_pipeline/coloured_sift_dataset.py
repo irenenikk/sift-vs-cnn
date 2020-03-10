@@ -6,6 +6,7 @@ import time
 from sklearn.cluster import MiniBatchKMeans
 import numpy as np
 from .utils import change_image_colourspace
+from sklearn.cluster import KMeans
 
 class ColouredSIFTDataset(Dataset):
 
@@ -23,13 +24,12 @@ class ColouredSIFTDataset(Dataset):
             print('Loading SIFT features from', full_feature_path)
             self.features = pickle.load(open(full_feature_path, "rb"))
         else:
-            vocabulary = self.get_coloured_bow_vocabulary(vocabulary_size)
-            self.features = self.get_coloured_bow_features(vocabulary)
+            self.features = self.get_coloured_bow_features(vocabulary_size)
             pickle.dump(self.features, open(full_feature_path, "wb"))
             print('Saving SIFT features to', full_feature_path)
 
     def convert_images_to_colorspace(self, color_space):
-        self.images = [change_image_colourspace(image, color_space) for image in self.images]
+        self.images = [change_image_colourspace(color_space, image) for image in self.images]
 
     def get_coloured_descriptors(self, image, grey_image, sift):
         # the features from different image dimensions are concatenated together
@@ -44,35 +44,30 @@ class ColouredSIFTDataset(Dataset):
                 concat_desc = np.concatenate((concat_desc, desc), axis=1)
         return concat_desc
 
-    def get_coloured_bow_vocabulary(self, vocabulary_size):
+    def get_coloured_bow_features(self, vocabulary_size):
         print('Building BOW vocabulary for', len(self.images), 'images')
-        bow_kmeans_trainer = cv.BOWKMeansTrainer(vocabulary_size)
         sift = cv.xfeatures2d.SIFT_create()
+        kmeans = KMeans(n_clusters=vocabulary_size, random_state=0)
+        all_descriptors = None
+        image_descriptors = []
+        sift = cv.xfeatures2d.SIFT_create()
+        print('Getting descriptors for images')
         for image, grey_image in zip(self.images, self.grey_images):
-            # the features from different image dimensions are concatenated together
             concat_desc = self.get_coloured_descriptors(image, grey_image, sift)
-            bow_kmeans_trainer.add(concat_desc)
+            if all_descriptors is None:
+                all_descriptors = concat_desc
+            else:
+                all_descriptors = np.concatenate((all_descriptors, concat_desc), axis=0)
+            image_descriptors.append(concat_desc)
         print('Training Kmeans with size', vocabulary_size)
-        start = time.time()
-        vocabulary = bow_kmeans_trainer.cluster()
-        end = time.time()
+        kmeans.fit(all_descriptors)
         print('Training took', (end-start)/60, 'minutes')
-        # check what the the vocabulary is
-        return vocabulary
-
-    def get_coloured_bow_features(self, vocabulary):
-        print('Getting BOW features')
-        sift = cv.xfeatures2d.SIFT_create()
-        extract = cv.xfeatures2d.SIFT_create()
-        # TODO: which matcher to use?
-        flann_params = dict(algorithm = 1, trees = 5)
-        matcher = cv.FlannBasedMatcher(flann_params, {})
-        bow_extractor = cv.BOWImgDescriptorExtractor(extract, matcher)
-        bow_extractor.setVocabulary(vocabulary)
-        bow_features = []
-        for image in self.images:
-            concat_features = self.get_coloured_descriptors(image, sift)
-            bow_features.append(concat_features)
+        bow_features = np.zeros((len(self.images), vocabulary_size))
+        for i, descriptors in enumerate(image_descriptors):
+            # the features from different image dimensions are concatenated together
+            clusters = kmeans.predict(descriptors)
+            bow_vector = np.histogram(clusters, bins=np.arange(vocabulary_size), density=True)
+            bow_features[i] = bow_vector
         return bow_features
 
     def __len__(self):
