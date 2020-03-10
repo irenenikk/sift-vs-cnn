@@ -139,5 +139,8 @@ class Flatten(nn.Module):
 
 class Transpose(nn.Module):
 
+    def __init__(self):
+        super(Transpose, self).__init__()
+
     def forward(self, x):
         return x.t()
