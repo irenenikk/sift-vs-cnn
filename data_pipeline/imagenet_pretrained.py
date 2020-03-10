@@ -7,7 +7,7 @@ from os import path
 import torch.nn as nn
 from PIL import Image
 from sklearn.decomposition import PCA
-from .utils import ToTensor, Rescale
+from .utils import ToTensor, Rescale, Transpose
 from tqdm import tqdm
 import pickle
 
@@ -52,7 +52,8 @@ class PretrainedImagenet(Dataset):
         ])
         # enable GPU
         model = self.load_transfer_learned_extractor()
-        feature_extractor = nn.Sequential(*list(model.children())[:-1])
+        children = list(model.children())
+        feature_extractor = nn.Sequential(*list(children[:-2] + [Transpose] + [children[-2]]))
         feature_extractor.eval()
         feature_extractor.to(device)
         print('Getting imagenet features for', len(self.images), 'images')
@@ -77,12 +78,6 @@ class PretrainedImagenet(Dataset):
         feature_extractor.load_state_dict(checkpoint['model_state_dict'])
         feature_extractor.eval()
         return feature_extractor
-
-    def read_imagenet_labels(self, label_path="imagenet_class_index.json"):
-        full_path = path.join(curr_dir, label_path)
-        labels = json.load(open(full_path, "rb"))
-        idx2label = [labels[str(k)][1] for k in range(len(labels))]
-        return idx2label
 
     @classmethod
     def get_resnet_feature_extractor_for_transfer(self, model_name, labels_amount):

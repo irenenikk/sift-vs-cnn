@@ -136,3 +136,8 @@ class Flatten(nn.Module):
         
     def forward(self, x):
         return x.view(-1, self.flattened_size)
+
+class Transpose(nn.Module):
+
+    def forward(self, x):
+        return x.t()
