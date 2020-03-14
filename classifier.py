@@ -59,5 +59,5 @@ if __name__ == "__main__":
     #print('SIFT scores', sift_scores.mean())
     hsv_sift_dataloader = get_coloured_sift_dataloader(training_images, training_labels[:N], args.sift_feature_path + '_hsv', 32, 'hsv', feature_size=args.sift_feature_size)
     hsv_sift_features, hsv_sift_labels = get_all_data_from_loader(hsv_sift_dataloader)
-    hsv_sift_scores = cross_val_score(classifier, hsv_sift_features, labels, cv=2)
-    print('Imagenet scores', hsv_sift_scores.mean())
+    hsv_sift_scores = cross_val_score(classifier, hsv_sift_features, hsv_sift_labels, cv=2)
+    print('HSV scores', hsv_sift_scores.mean())

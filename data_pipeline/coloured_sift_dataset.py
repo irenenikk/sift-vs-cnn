@@ -1,6 +1,7 @@
 from torch.utils.data import Dataset
 import cv2 as cv
 import pickle
+import torch
 from os import path
 import time
 from sklearn.cluster import MiniBatchKMeans
@@ -60,13 +61,15 @@ class ColouredSIFTDataset(Dataset):
                 all_descriptors = np.concatenate((all_descriptors, concat_desc), axis=0)
             image_descriptors.append(concat_desc)
         print('Training Kmeans with size', vocabulary_size)
+        start = time.time()
         kmeans.fit(all_descriptors)
+        end = time.time()
         print('Training took', (end-start)/60, 'minutes')
         bow_features = np.zeros((len(self.images), vocabulary_size))
         for i, descriptors in enumerate(image_descriptors):
             # the features from different image dimensions are concatenated together
             clusters = kmeans.predict(descriptors)
-            bow_vector = np.histogram(clusters, bins=np.arange(vocabulary_size), density=True)
+            bow_vector = np.histogram(clusters, bins=np.arange(vocabulary_size+1), density=True)[0]
             bow_features[i] = bow_vector
         return bow_features
 
@@ -74,4 +77,4 @@ class ColouredSIFTDataset(Dataset):
         return len(self.features)
 
     def __getitem__(self, idx):
-        return self.features[idx], self.labels[idx]
+        return torch.Tensor(self.features[idx]), self.labels[idx]

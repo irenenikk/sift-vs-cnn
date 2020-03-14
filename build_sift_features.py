@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser = get_argparser()
     args = parser.parse_args()
     training_indices = pd.read_csv(args.training_index_file, sep=' ', header=None)
-    N = args.no_images if N < len(training_indices) else len(training_indices)
+    N = args.no_images if args.no_images < len(training_indices) else len(training_indices)
     label_i = 1
     training_labels = training_indices.iloc[:, label_i]
     training_images = read_images(args.image_root, training_indices, N, grey=False)
