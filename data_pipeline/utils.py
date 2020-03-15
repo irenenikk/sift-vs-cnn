@@ -102,6 +102,7 @@ def get_all_data_from_loader(dataloader):
         y = y.to(device)
         features = torch.cat((features, x), 0)
         labels = torch.cat((labels, y), 0)
+    import ipdb; ipdb.set_trace()
     return torch.squeeze(features).numpy(), torch.squeeze(labels).numpy()
 
 def normalise_rgb_dims(image):
