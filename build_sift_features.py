@@ -25,6 +25,7 @@ def get_argparser():
     parser.add_argument("-sift-f", "--sift-feature-size", required=True, type=int, help="The feature size for SIFT")
     parser.add_argument("-N", "--no-images", required=True, type=int, help="The amount of images to use in building features")
     parser.add_argument("-l", "--label-index", required=True, type=int, help="Which index to use as the label, between 1 and 5. Use 1 o classify species, 5 to classify families.")
+    parser.add_argument("-p", "--feature-path", required=True, type=str, help="Path to store features to or load them from.")
     return parser
 
 if __name__ == '__main__':

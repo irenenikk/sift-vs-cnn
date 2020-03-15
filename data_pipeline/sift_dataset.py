@@ -8,12 +8,11 @@ import numpy as np
 
 class SIFTDataset(Dataset):
 
-    def __init__(self, images, labels, feature_path, vocabulary_size):
+    def __init__(self, images, labels, feature_folder, vocabulary_size):
         self.images = images
         self.labels = labels
         assert len(self.images) == len(self.labels)
-        curr_dir = path.dirname(path.realpath(__file__))
-        full_feature_path = path.join(curr_dir, feature_path + '_' + str(len(images)) + '_' + str(vocabulary_size))
+        full_feature_path = path.join(feature_folder, 'sift_features_' + str(len(images)) + '_' + str(vocabulary_size))
         if path.exists(full_feature_path):
             print('Loading SIFT features from', full_feature_path)
             self.features = pickle.load(open(full_feature_path, "rb"))

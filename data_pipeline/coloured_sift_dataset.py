@@ -11,7 +11,7 @@ from sklearn.cluster import KMeans
 
 class ColouredSIFTDataset(Dataset):
 
-    def __init__(self, images, labels, feature_path, vocabulary_size, color_space):
+    def __init__(self, images, labels, feature_folder, vocabulary_size, color_space):
         self.images = np.asarray(images)
         if self.images.shape[-1] == 3:
             raise ValueError('Images need to have colour to form a coloured SIFT dataset')
@@ -19,8 +19,7 @@ class ColouredSIFTDataset(Dataset):
         assert len(self.images) == len(self.labels)
         self.grey_images = [cv.cvtColor(image, cv.COLOR_BGR2GRAY) for image in self.images]
         self.convert_images_to_colorspace(color_space)
-        curr_dir = path.dirname(path.realpath(__file__))
-        full_feature_path = path.join(curr_dir, feature_path + '_' + str(vocabulary_size))
+        full_feature_path = path.join(feature_folder, 'coloured_sift_' + color_space + '_' + str(vocabulary_size))
         if path.exists(full_feature_path):
             print('Loading SIFT features from', full_feature_path)
             self.features = pickle.load(open(full_feature_path, "rb"))

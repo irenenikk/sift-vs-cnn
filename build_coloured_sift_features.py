@@ -26,6 +26,7 @@ def get_argparser():
     parser.add_argument("-N", "--no-images", required=True, type=int, help="The amount of images to use in building features")
     parser.add_argument("-l", "--label-index", required=True, type=int, help="Which index to use as the label, between 1 and 5. Use 1 o classify species, 5 to classify families.")
     parser.add_argument("-c", "--colour-space", type=str, required=True, help="Which color space to use in SIFT features")
+    parser.add_argument("-p", "--feature-folder", type=str, required=True, help="Path to folder for storing features to or loading them from.")
     return parser
 
 if __name__ == '__main__':
@@ -36,4 +37,4 @@ if __name__ == '__main__':
     label_i = args.label_index
     training_labels = training_indices.iloc[:, label_i]
     training_images = read_images(args.image_root, training_indices, N, grey=False)
-    dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], 'features/coloured_sift_' + args.colour_space, 32, args.colour_space, feature_size=args.sift_feature_size)
+    dataloader = get_coloured_sift_dataloader(training_images[:N], training_labels[:N], args.feature_folder, 32, args.colour_space, feature_size=args.sift_feature_size)
