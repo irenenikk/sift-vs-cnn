@@ -7,7 +7,7 @@ from os import path
 import torch.nn as nn
 from PIL import Image
 from sklearn.decomposition import PCA
-from .utils import ToTensor, Rescale, Transpose
+from .utils import ToTensor, Rescale, Flatten
 from tqdm import tqdm
 import pickle
 
@@ -53,7 +53,8 @@ class PretrainedImagenet(Dataset):
         # enable GPU
         model = self.load_transfer_learned_extractor()
         children = list(model.children())
-        feature_extractor = nn.Sequential(*list(model.children()[-1]))
+        feature_extractor = nn.Sequential(*children[:-1] + [Flatten()] + [children[-1]])
+        import ipdb; ipdb.set_trace()
         feature_extractor.eval()
         feature_extractor.to(device)
         print('Getting imagenet features for', len(self.images), 'images')

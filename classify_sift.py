@@ -16,7 +16,7 @@ def get_argparser():
     parser.add_argument("-s", "--species-file", type=str, default="data/species.txt",
                         help="The path to the file with mappings from index to species name")
     parser.add_argument("-sift-size", "--sift-feature-size", required=True, type=int, help="The feature size for SIFT")
-    parser.add_argument("-sift-path", "--sift-feature-path", required=True, type=str, help="The path to SIFT features")
+    parser.add_argument("-f", "--feature-folder", required=True, type=str, help="The path to SIFT feature folder")
     parser.add_argument("-c", "--colour-space", type=str, default=None, help="The colour space to use. None for unnormalised RGB.")
     parser.add_argument("-N", "--no-images", required=True, type=int, help="The amount of images to use in building features")
     parser.add_argument("-l", "--label-index", required=True, type=int, help="Which index to use as the label, between 1 and 5. Use 1 o classify species, 5 to classify families.")
@@ -36,9 +36,9 @@ if __name__ == "__main__":
     training_images = read_images(args.image_root, training_indices, N, grey=False)
     sift_dataloader = None
     if args.colour_space is None:
-        sift_dataloader = get_sift_dataloader(training_images, training_labels[:N], args.sift_feature_path, 32, feature_size=args.sift_feature_size)
+        sift_dataloader = get_sift_dataloader(training_images, training_labels[:N], args.feature_folder, 32, feature_size=args.sift_feature_size)
     else:
-        sift_dataloader = get_coloured_sift_dataloader(training_images, training_labels[:N], args.sift_feature_path, 32, args.colour_space, feature_size=args.sift_feature_size)
+        sift_dataloader = get_coloured_sift_dataloader(training_images, training_labels[:N], args.feature_folder, 32, args.colour_space, feature_size=args.sift_feature_size)
     sift_features, sift_labels = get_all_data_from_loader(sift_dataloader)
     print('Got features')
     classifier = SVC(kernel=args.svm_kernel)
