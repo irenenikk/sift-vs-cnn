@@ -53,9 +53,7 @@ class PretrainedImagenet(Dataset):
         # enable GPU
         model = self.load_transfer_learned_extractor()
         children = list(model.children())
-        feature_extractor = nn.Sequential(*list(model.children()[-1]))
-        #feature_extractor = nn.Sequential(*list(children[:-2] + [Transpose()] + [children[-2]]))
-        feature_extractor = nn.Sequential(*children[:-1] + [Flatten()] + [children[-1]])
+        feature_extractor = nn.Sequential(*list(children[:-2] + [Flatten()] + [children[-2]]))
         import ipdb; ipdb.set_trace()
         feature_extractor.eval()
         feature_extractor.to(device)
