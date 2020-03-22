@@ -130,7 +130,7 @@ def change_image_colourspace(color_space, image):
 
 # https://discuss.pytorch.org/t/size-mismatch-after-loading-saved-model-please-explain/21295/7
 class Flatten(nn.Module):
-    def __init__(self, flattened_size):
+    def __init__(self):
         super(Flatten, self).__init__()
         
     def forward(self, x):
