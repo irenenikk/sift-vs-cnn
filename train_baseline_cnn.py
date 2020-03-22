@@ -27,20 +27,16 @@ def get_argparser():
     parser.add_argument("-g", "--grey", default=False, action="store_true", help="Use grey images in training.")
     return parser
 
-def find_baseline_hyperparameters(training_images, training_labels):
-    new_size = 256
-    preprocess = transforms.Compose([
-                transforms.Resize((new_size, new_size)),
-                transforms.ToTensor()])
-    resized_images = [preprocess(Image.fromarray(image)) for image in training_images]
-    find_hyperparameters(resized_images, training_labels[:len(training_images)].values)
-
-
 if __name__ == '__main__':
     parser = get_argparser()
     args = parser.parse_args()
     training_indices = pd.read_csv(args.training_index_file, sep=' ', header=None)
-    training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file, batch_size=args.batch_size, label_i=args.label_index, color_space=args.color_space, grey=args.grey)
-    development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file, batch_size=args.batch_size, label_i=args.label_index, color_space=args.color_space, grey=args.grey)
+    training_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.training_index_file, args.species_file,\
+                                                                batch_size=args.batch_size, label_i=args.label_index,\
+                                                                    color_space=args.color_space, grey=args.grey)
+    development_butterfly_dataloader = get_butterfly_dataloader(args.image_root, args.development_index_file, args.species_file,\
+                                                                    batch_size=args.batch_size, label_i=args.label_index,\
+                                                                        color_space=args.color_space, grey=args.grey)
     baseline_cnn = BaselineCNN(grey=args.grey)
-    run_baseline_training(baseline_cnn, args.model_checkpoint, training_butterfly_dataloader, development_butterfly_dataloader, resume=args.resume, epochs=args.epochs)
+    run_baseline_training(baseline_cnn, args.model_checkpoint, training_butterfly_dataloader,\
+                                development_butterfly_dataloader, resume=args.resume, epochs=args.epochs)
