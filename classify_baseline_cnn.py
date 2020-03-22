@@ -4,7 +4,7 @@ from data_pipeline.dataloaders import get_baseline_cnn_dataloader
 from data_pipeline.utils import read_images, get_all_data_from_loader
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
-from .utils import get_indices_and_labels
+from utils import get_indices_and_labels
 
 def get_argparser():
     parser = argparse.ArgumentParser(description='Obtain SIFT features for training set')
