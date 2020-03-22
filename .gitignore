@@ -2,3 +2,4 @@ data
 __pycache__
 data_pipeline/features
 */saved_models
+.DS_Store

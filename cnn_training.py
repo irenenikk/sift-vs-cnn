@@ -97,27 +97,3 @@ def run_baseline_training(neural_net, checkpoint_path, trainloader, evalloader, 
     neural_net.to(device)
     train_classifier(neural_net, neural_net.parameters(), checkpoint_path, trainloader, evalloader, resume, epochs)
 
-def find_hyperparameters(training_images, training_labels):
-    net = NeuralNetClassifier(
-        BaselineCNN,
-        max_epochs=10,
-        lr=[0.1, 0.005],
-        # Shuffle training data on each epoch
-        iterator_train__shuffle=True,
-    )
-    params = {
-        'lr': [0.01, 0.02],
-        'max_epochs': [10, 20],
-        'module__maxpool_kernel_size': [2, 4, 8],
-        'module__out1': [6, 12, 18],
-        'module__kernel1': [2, 4, 8],
-        'module__in2': [2, 6, 12],
-        'module_out2': [8, 16, 24],
-        'module__kernel2': [2, 4, 8]
-    }
-    gs = GridSearchCV(net, params, refit=False, cv=3, scoring='accuracy')
-    # TODO: X and y sizes are said not to match
-    gs.fit(training_images, training_labels)
-    print(gs.best_score_)
-    return gs.best_params_
-
