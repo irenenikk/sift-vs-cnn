@@ -134,7 +134,7 @@ class Flatten(nn.Module):
         super(Flatten, self).__init__()
         
     def forward(self, x):
-        return x = x.reshape(x.size(0), -1)
+        return x.reshape(x.size(0), -1)
 
 class Transpose(nn.Module):
 
