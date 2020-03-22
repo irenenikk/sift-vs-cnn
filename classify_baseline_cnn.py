@@ -4,6 +4,7 @@ from data_pipeline.dataloaders import get_baseline_cnn_dataloader
 from data_pipeline.utils import read_images, get_all_data_from_loader
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
+from .utils import get_indices_and_labels
 
 def get_argparser():
     parser = argparse.ArgumentParser(description='Obtain SIFT features for training set')
@@ -33,14 +34,19 @@ if __name__ == "__main__":
     N = args.no_images
     batch_size = N
     label_i = args.label_index
-    training_indices = pd.read_csv(args.training_index_file, sep=' ', header=None)
-    training_labels = training_indices.iloc[:, label_i]
-    training_labels = training_labels - 1
+    training_indices, training_labels = get_indices_and_labels(args.training_index_file, args.label_index)
     training_images = read_images(args.image_root, training_indices, N, grey=False)
+    test_indices, test_labels = get_indices_and_labels(args.test_index_file, args.label_index)
+    test_images = read_images(args.image_root, test_indices, 1000, grey=False)
     baseline_cnn_feature_dataloader = get_baseline_cnn_dataloader(training_images, training_labels[:N], training_labels.nunique(), \
                                                                         batch_size, args.cnn_features, args.baseline_cnn_path, args.cnn_color_space, args.cnn_grey)
     baseline_cnn_features, baseline_cnn_labels = get_all_data_from_loader(baseline_cnn_feature_dataloader)
+    test_baseline_cnn_feature_dataloader = get_baseline_cnn_dataloader(training_images, training_labels[:N], training_labels.nunique(), \
+                                                                        batch_size, args.cnn_features + '_test', args.baseline_cnn_path, args.cnn_color_space, args.cnn_grey)
+    test_baseline_cnn_features, test_baseline_cnn_labels = get_all_data_from_loader(test_baseline_cnn_feature_dataloader)
     classifier = SVC(kernel=args.svm_kernel)
     print('Running cross validation')
-    scores = cross_val_score(classifier, baseline_cnn_features, baseline_cnn_labels, cv=3)
-    print('Imagenet scores', scores)
+    classifier.fit(baseline_cnn_features, baseline_cnn_labels)
+    imagenet_scores = classifier.score(test_baseline_cnn_features, test_baseline_cnn_labels)
+    print('Baseline CNN scores', scores)
+

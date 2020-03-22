@@ -4,6 +4,7 @@ from data_pipeline.dataloaders import get_pretrained_imagenet_dataloader
 from data_pipeline.utils import read_images, get_all_data_from_loader
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
+from .utils import get_indices_and_labels
 
 def get_argparser():
     parser = argparse.ArgumentParser(description='Obtain SIFT features for training set')
@@ -25,12 +26,6 @@ def get_argparser():
     # TODO: add reduced dims
     return parser
 
-def get_indices_and_labels(file, label_i):
-    indices = pd.read_csv(file, sep=' ', header=None)
-    labels = indices.iloc[:, label_i]
-    labels = labels - 1
-    return indices, labels
-
 if __name__ == "__main__":
     parser = get_argparser()
     args = parser.parse_args()
@@ -50,6 +45,6 @@ if __name__ == "__main__":
     test_imagenet_features, test_imagenet_labels = get_all_data_from_loader(test_imagenet_feature_dataloader)
     print('Got features')
     classifier = SVC(kernel=args.svm_kernel)
-    print('Running cross validation')
+    classifier.fit(imagenet_features, imagenet_labels)
     imagenet_scores = classifier.score(test_imagenet_features, test_imagenet_labels)
     print('Imagenet scores', imagenet_scores)
