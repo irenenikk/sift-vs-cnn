@@ -144,4 +144,5 @@ class Transpose(nn.Module):
         super(Transpose, self).__init__()
 
     def forward(self, x):
+        import ipdb; ipdb.set_trace()
         return x.t()
