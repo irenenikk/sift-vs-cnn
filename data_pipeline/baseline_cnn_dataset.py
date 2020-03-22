@@ -25,6 +25,10 @@ class BaselineCNNDataset(Dataset):
         self.grey = grey
         curr_dir = path.dirname(path.realpath(__file__))
         self.extractor_path = path.join(curr_dir, extractor_path)
+        if color_space is not None:
+            self.extractor_path += '_' + color_space
+        elif: grey:
+            self.extractor_path += '_grey'
         assert len(self.images) == len(self.labels)
         full_feature_path = path.join(curr_dir, feature_path)
         if path.exists(full_feature_path):
