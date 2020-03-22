@@ -1,9 +1,6 @@
 import pandas as pd
 import argparse
-from data_pipeline.dataloaders import get_pretrained_imagenet_dataloader,\
-                                            get_sift_dataloader,\
-                                                get_coloured_sift_dataloader,\
-                                                    get_baseline_cnn_dataloader
+from data_pipeline.dataloaders import get_baseline_cnn_dataloader
 from data_pipeline.utils import read_images, get_all_data_from_loader
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
@@ -22,8 +19,8 @@ def get_argparser():
     parser.add_argument("-sift-path", "--sift-feature-path", type=str, help="The path to SIFT features")
     parser.add_argument("-N", "--no-images", required=True, type=int, help="The amount of images to use in building features")
     parser.add_argument("-l", "--label-index", required=True, type=int, help="Which index to use as the label, between 1 and 5. Use 1 o classify species, 5 to classify families.")
-    parser.add_argument("-b-cnn", "--baseline-cnn-path", type=str, help="Path to trained baseline CNN")
-    parser.add_argument("-cnn-feat", "--cnn-features", type=str, help="Path to baseline CNN features")
+    parser.add_argument("-b-cnn", "--baseline-cnn-path", required=True, type=str, help="Path to trained baseline CNN")
+    parser.add_argument("-cnn-feat", "--cnn-features", required=True, type=str, help="Path to baseline CNN features")
     parser.add_argument("-kernel", "--svm-kernel", default="linear", help="SVM kernel to use in classification")
     parser.add_argument("-g-cnn", "--cnn-grey", default=False, action="store_true")
     parser.add_argument("-gccnn", "--cnn-color-space", type=str, default=None, help="Color space to use in baseline CNN features")

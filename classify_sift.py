@@ -1,9 +1,6 @@
 import pandas as pd
 import argparse
-from data_pipeline.dataloaders import get_pretrained_imagenet_dataloader,\
-                                            get_sift_dataloader,\
-                                                get_coloured_sift_dataloader,\
-                                                    get_baseline_cnn_dataloader
+from data_pipeline.dataloaders import get_sift_dataloader, get_coloured_sift_dataloader
 from data_pipeline.utils import read_images, get_all_data_from_loader
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
@@ -18,8 +15,8 @@ def get_argparser():
                         help="The path to the file with development indices")
     parser.add_argument("-s", "--species-file", type=str, default="data/species.txt",
                         help="The path to the file with mappings from index to species name")
-    parser.add_argument("-sift-size", "--sift-feature-size", type=int, help="The feature size for SIFT")
-    parser.add_argument("-sift-path", "--sift-feature-path", type=str, help="The path to SIFT features")
+    parser.add_argument("-sift-size", "--sift-feature-size", required=True, type=int, help="The feature size for SIFT")
+    parser.add_argument("-sift-path", "--sift-feature-path", required=True, type=str, help="The path to SIFT features")
     parser.add_argument("-c", "--colour-space", type=str, default=None, help="The colour space to use. None for unnormalised RGB.")
     parser.add_argument("-N", "--no-images", required=True, type=int, help="The amount of images to use in building features")
     parser.add_argument("-l", "--label-index", required=True, type=int, help="Which index to use as the label, between 1 and 5. Use 1 o classify species, 5 to classify families.")
