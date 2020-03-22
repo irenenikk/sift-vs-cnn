@@ -4,7 +4,7 @@ import cv2 as cv
 from data_pipeline.dataloaders import get_butterfly_dataloader
 import pandas as pd
 from models.baseline_cnn import BaselineCNN
-from cnn_training import run_baseline_training, find_hyperparameters
+from cnn_training import run_baseline_training
 from PIL import Image
 from torchvision import transforms
 
