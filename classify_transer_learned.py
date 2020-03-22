@@ -1,6 +1,6 @@
 import pandas as pd
 import argparse
-from data_pipeline.dataloaders import get_pretrained_imagenet_dataloader,\
+from data_pipeline.dataloaders import get_pretrained_imagenet_dataloader
 from data_pipeline.utils import read_images, get_all_data_from_loader
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
