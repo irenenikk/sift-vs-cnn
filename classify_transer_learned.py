@@ -31,15 +31,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
     N = args.no_images
     batch_size = N
+    test_N = 1000
     label_i = args.label_index
     training_indices, training_labels = get_indices_and_labels(args.training_index_file, args.label_index)
     training_images = read_images(args.image_root, training_indices, N, grey=False)
     test_indices, test_labels = get_indices_and_labels(args.test_index_file, args.label_index)
-    test_images = read_images(args.image_root, test_indices, 1000, grey=False)
+    test_images = read_images(args.image_root, test_indices, test_N, grey=False)
     imagenet_feature_dataloader = get_pretrained_imagenet_dataloader(training_images, training_labels[:N], training_labels.nunique(), \
                                                                         batch_size, args.imagenet_features, args.imagenet_extractor_path)
     imagenet_features, imagenet_labels = get_all_data_from_loader(imagenet_feature_dataloader)
-    test_imagenet_feature_dataloader = get_pretrained_imagenet_dataloader(test_images, test_labels[:1000], test_labels.nunique(), \
+    test_imagenet_feature_dataloader = get_pretrained_imagenet_dataloader(test_images, test_labels[:test_N], test_labels.nunique(), \
                                                                         batch_size, args.imagenet_features + '_test', args.imagenet_extractor_path)
     imagenet_features, imagenet_labels = get_all_data_from_loader(imagenet_feature_dataloader)
     test_imagenet_features, test_imagenet_labels = get_all_data_from_loader(test_imagenet_feature_dataloader)

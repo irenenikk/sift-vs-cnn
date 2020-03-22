@@ -23,13 +23,13 @@ def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, l
     dataloader = DataLoader(butterfly_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
-def get_sift_dataloader(images, labels, feature_folder, batch_size, feature_size):
-    sift_dataset = SIFTDataset(images, labels, feature_folder, feature_size)
+def get_sift_dataloader(images, labels, feature_folder, batch_size, feature_size, test=False):
+    sift_dataset = SIFTDataset(images, labels, feature_folder, feature_size, test)
     dataloader = DataLoader(sift_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
-def get_coloured_sift_dataloader(images, labels, feature_folder, batch_size, colour_space, feature_size):
-    sift_dataset = ColouredSIFTDataset(images, labels, feature_folder, feature_size, colour_space)
+def get_coloured_sift_dataloader(images, labels, feature_folder, batch_size, colour_space, feature_size, test=False):
+    sift_dataset = ColouredSIFTDataset(images, labels, feature_folder, feature_size, colour_space, test)
     dataloader = DataLoader(sift_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 

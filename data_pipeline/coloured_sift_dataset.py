@@ -19,8 +19,9 @@ class ColouredSIFTDataset(Dataset):
         self.grey_images = [cv.cvtColor(image, cv.COLOR_BGR2GRAY) for image in self.images]
         self.convert_images_to_colorspace(color_space)
         self.test = test
+        test_id = '_test' if self.test else ''
         self.trained_kmeans_path = os.path.join(feature_folder, 'trained_kmeans' + color_space + '_' + str(vocabulary_size))
-        full_feature_path = path.join(feature_folder, 'coloured_sift_' + color_space + '_' + str(vocabulary_size))
+        full_feature_path = path.join(feature_folder, 'coloured_sift_' + color_space + '_' + str(vocabulary_size) + test_id)
         if path.exists(full_feature_path):
             print('Loading SIFT features from', full_feature_path)
             self.features = pickle.load(open(full_feature_path, "rb"))

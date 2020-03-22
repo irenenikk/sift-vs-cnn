@@ -14,7 +14,8 @@ class SIFTDataset(Dataset):
         self.labels = labels
         assert len(self.images) == len(self.labels)
         self.test = test
-        full_feature_path = path.join(feature_folder, 'sift_features_' + str(len(images)) + '_' + str(vocabulary_size))
+        test_id = '_test' if self.test else ''
+        full_feature_path = path.join(feature_folder, 'sift_features_' + str(len(images)) + '_' + str(vocabulary_size) + test_id)
         vocabulary_path = path.join(feature_folder, 'sift_vocabulary_' + str(vocabulary_size))
         if path.exists(full_feature_path):
             print('Loading SIFT features from', full_feature_path)

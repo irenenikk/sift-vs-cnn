@@ -62,10 +62,8 @@ class BaselineCNNDataset(Dataset):
         ])
         # enable GPU
         model = self.load_trained_extractor()
-        print(model)
         children = list(model.children())
         feature_extractor = nn.Sequential(*list(children[:2] + [nn.ReLU()] + children[2:4] + [nn.ReLU()] + [children[4]]+ [Flatten()] + children[5:-2]))
-        print(feature_extractor)
         feature_extractor.to(device)
         print('Getting Baseline CNN features for', len(self.images), 'images')
         with torch.no_grad():
