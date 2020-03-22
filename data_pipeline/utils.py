@@ -102,7 +102,6 @@ def get_all_data_from_loader(dataloader):
         y = y.to(device)
         features = torch.cat((features, x), 0)
         labels = torch.cat((labels, y), 0)
-    import ipdb; ipdb.set_trace()
     return torch.squeeze(features).numpy(), torch.squeeze(labels).numpy()
 
 def normalise_rgb_dims(image):
@@ -133,10 +132,9 @@ def change_image_colourspace(color_space, image):
 class Flatten(nn.Module):
     def __init__(self, flattened_size):
         super(Flatten, self).__init__()
-        self.flattened_size = flattened_size
         
     def forward(self, x):
-        return x.view(-1, self.flattened_size)
+        return x = x.reshape(x.size(0), -1)
 
 class Transpose(nn.Module):
 

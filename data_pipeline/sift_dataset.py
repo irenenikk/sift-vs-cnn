@@ -5,19 +5,29 @@ from os import path
 import time
 from sklearn.cluster import MiniBatchKMeans
 import numpy as np
+import pickle
 
 class SIFTDataset(Dataset):
 
-    def __init__(self, images, labels, feature_folder, vocabulary_size):
+    def __init__(self, images, labels, feature_folder, vocabulary_size, test=False):
         self.images = images
         self.labels = labels
         assert len(self.images) == len(self.labels)
+        self.test = test
         full_feature_path = path.join(feature_folder, 'sift_features_' + str(len(images)) + '_' + str(vocabulary_size))
+        vocabulary_path = path.join(feature_folder, 'sift_vocabulary_' + str(len(images)) + '_' + str(vocabulary_size))
         if path.exists(full_feature_path):
             print('Loading SIFT features from', full_feature_path)
             self.features = pickle.load(open(full_feature_path, "rb"))
         else:
-            vocabulary = self.get_bow_vocabulary(self.images, vocabulary_size)
+            vocabulary = None
+            if self.test:
+                vocabulary = pickle.load(open(vocabulary_path, 'rb'))
+            else:
+                vocabulary = self.get_bow_vocabulary(self.images, vocabulary_size)
+                print('Saving vocabulary to', vocabulary_path)
+                with open(vocabulary_path, 'wb') as f:
+                    pickle.dump(vocabulary, f)
             self.features = self.get_bow_features(self.images, vocabulary)
             pickle.dump(self.features, open(full_feature_path, "wb"))
             print('Saving SIFT features to', full_feature_path)
