@@ -48,6 +48,6 @@ if __name__ == "__main__":
     classifier = SVC(kernel=args.svm_kernel)
     print('Running cross validation')
     classifier.fit(baseline_cnn_features, baseline_cnn_labels)
-    imagenet_scores = classifier.score(test_baseline_cnn_features, test_baseline_cnn_labels)
+    scores = classifier.score(test_baseline_cnn_features, test_baseline_cnn_labels)
     print('Baseline CNN scores', scores)
 

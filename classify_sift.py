@@ -52,4 +52,4 @@ if __name__ == "__main__":
     classifier.fit(sift_features, sift_labels)
     test_sift_features, test_sift_labels = get_all_data_from_loader(test_sift_dataloader)
     score = classifier.score(test_sift_features, test_sift_labels)
-    print('SIFT score', )
+    print('SIFT score', score)
