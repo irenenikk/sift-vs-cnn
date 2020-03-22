@@ -42,7 +42,7 @@ if __name__ == "__main__":
     baseline_cnn_feature_dataloader = get_baseline_cnn_dataloader(training_images, training_labels[:N], training_labels.nunique(), \
                                                                         batch_size, args.cnn_features, args.baseline_cnn_path, args.cnn_color_space, args.cnn_grey)
     baseline_cnn_features, baseline_cnn_labels = get_all_data_from_loader(baseline_cnn_feature_dataloader)
-    test_baseline_cnn_feature_dataloader = get_baseline_cnn_dataloader(training_images, training_labels[:test_N], training_labels.nunique(), \
+    test_baseline_cnn_feature_dataloader = get_baseline_cnn_dataloader(test_images, test_labels[:test_N], test_labels[:test_N].nunique(), \
                                                                         batch_size, args.cnn_features + '_test', args.baseline_cnn_path, args.cnn_color_space, args.cnn_grey)
     test_baseline_cnn_features, test_baseline_cnn_labels = get_all_data_from_loader(test_baseline_cnn_feature_dataloader)
     classifier = SVC(kernel=args.svm_kernel)

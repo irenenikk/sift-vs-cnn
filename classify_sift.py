@@ -43,13 +43,13 @@ if __name__ == "__main__":
         sift_dataloader = get_coloured_sift_dataloader(training_images, training_labels[:N], args.feature_folder, 32, args.colour_space, feature_size=args.sift_feature_size)
     test_sift_dataloader = None
     if args.colour_space is None:
-        test_sift_dataloader = get_sift_dataloader(training_images, training_labels[:test_N], args.feature_folder, 32, feature_size=args.sift_feature_size, test=True)
+        test_sift_dataloader = get_sift_dataloader(test_images, test_labels[:test_N], args.feature_folder, 32, feature_size=args.sift_feature_size, test=True)
     else:
-        test_sift_dataloader = get_coloured_sift_dataloader(training_images, training_labels[:test_N], args.feature_folder, 32, args.colour_space, feature_size=args.sift_feature_size, test=True)
+        test_sift_dataloader = get_coloured_sift_dataloader(test_images, test_labels[:test_N], args.feature_folder, 32, args.colour_space, feature_size=args.sift_feature_size, test=True)
     sift_features, sift_labels = get_all_data_from_loader(sift_dataloader)
     print('Got features')
     classifier = SVC(kernel=args.svm_kernel)
     classifier.fit(sift_features, sift_labels)
-    print('Running cross validation')
-    sift_scores = cross_val_score(classifier, sift_features, sift_labels, cv=3)
-    print('SIFT scores', sift_scores.mean())
+    test_sift_features, test_sift_labels = get_all_data_from_loader(test_sift_dataloader)
+    score = classifier.score(test_sift_features, test_sift_labels)
+    print('SIFT score', )
