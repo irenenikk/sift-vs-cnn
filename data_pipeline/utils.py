@@ -100,7 +100,7 @@ def get_all_data_from_loader(dataloader):
     for x, y in dataloader:
         x = x.to(device)
         y = y.to(device)
-        features = torch.cat((features, x), 0)
+        features = torch.cat((features, x.float()), 0)
         labels = torch.cat((labels, y), 0)
     return torch.squeeze(features).cpu().numpy(), torch.squeeze(labels).cpu().numpy()
 

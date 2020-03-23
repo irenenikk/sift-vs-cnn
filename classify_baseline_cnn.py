@@ -16,8 +16,6 @@ def get_argparser():
                         help="The path to the file with test indices")
     parser.add_argument("-s", "--species-file", type=str, default="data/species.txt",
                         help="The path to the file with mappings from index to species name")
-    parser.add_argument("-sift-size", "--sift-feature-size", type=int, help="The feature size for SIFT")
-    parser.add_argument("-sift-path", "--sift-feature-path", type=str, help="The path to SIFT features")
     parser.add_argument("-N", "--no-images", required=True, type=int, help="The amount of images to use in building features")
     parser.add_argument("-l", "--label-index", required=True, type=int, help="Which index to use as the label, between 1 and 5. Use 1 o classify species, 5 to classify families.")
     parser.add_argument("-b-cnn", "--baseline-cnn-path", required=True, type=str, help="Path to trained baseline CNN")
@@ -33,25 +31,22 @@ if __name__ == "__main__":
     args = parser.parse_args()
     N = args.no_images
     batch_size = N
-    test_N = 1000
+    test_N = 5000
     label_i = args.label_index
     training_indices, training_labels = get_indices_and_labels(args.training_index_file, args.label_index)
     training_images = read_images(args.image_root, training_indices, N, grey=False)
     test_indices, test_labels = get_indices_and_labels(args.test_index_file, args.label_index)
     test_images = read_images(args.image_root, test_indices, test_N, grey=False)
     baseline_cnn_feature_dataloader = get_baseline_cnn_dataloader(training_images, training_labels[:N], training_labels.nunique(), \
-                                                                        batch_size, args.cnn_features, args.baseline_cnn_path, args.cnn_color_space, args.cnn_grey)
+                                                                        batch_size, args.cnn_features, args.baseline_cnn_path, args.color_space, args.grey)
     baseline_cnn_features, baseline_cnn_labels = get_all_data_from_loader(baseline_cnn_feature_dataloader)
     test_baseline_cnn_feature_dataloader = get_baseline_cnn_dataloader(test_images, test_labels[:test_N], test_labels[:test_N].nunique(), \
-                                                                        batch_size, args.cnn_features + '_test', args.baseline_cnn_path, args.cnn_color_space, args.cnn_grey)
+                                                                        batch_size, args.cnn_features + '_test', args.baseline_cnn_path, args.color_space, args.grey)
     test_baseline_cnn_features, test_baseline_cnn_labels = get_all_data_from_loader(test_baseline_cnn_feature_dataloader)
     classifier = SVC(kernel=args.svm_kernel)
     cv_scores = cross_val_score(classifier, baseline_cnn_features, baseline_cnn_labels, cv=3)
     print('CV scores', cv_scores.mean())
-    '''
     print('Fitting the SVM')
     classifier.fit(baseline_cnn_features, baseline_cnn_labels)
     scores = classifier.score(test_baseline_cnn_features, test_baseline_cnn_labels)
     print('Baseline CNN scores', scores)
-    '''
-

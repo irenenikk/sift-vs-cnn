@@ -18,7 +18,6 @@ def get_argparser():
                         help="The path to the file with mappings from index to species name")
     parser.add_argument("-N", "--no-images", required=True, type=int, help="The amount of images to use in building features")
     parser.add_argument("-l", "--label-index", required=True, type=int, help="Which index to use as the label, between 1 and 5. Use 1 o classify species, 5 to classify families.")
-    parser.add_argument("-b-cnn", "--baseline-cnn-path", required=True, type=str, help="Path to trained baseline CNN")
     parser.add_argument("-f", "--feature-folder", required=True, type=str, help="Path to CNN feature base")
     parser.add_argument("-kernel", "--svm-kernel", default="linear", help="SVM kernel to use in classification")
     parser.add_argument("-g", "--grey", default=False, action="store_true")
@@ -34,15 +33,17 @@ if __name__ == "__main__":
     label_i = args.label_index
     _, training_labels = get_indices_and_labels(args.training_index_file, args.label_index)
     _, test_labels = get_indices_and_labels(args.test_index_file, args.label_index)
-    sift_dataloader = get_combined_cnn_dataloader(training_labels[:N], 32, args.feature_folder, feature_size=args.sift_feature_size, grey=args.grey)
-    test_sift_dataloader = get_combined_cnn_dataloader(test_labels[:test_N], 32, args.feature_folder, feature_size=args.sift_feature_size, grey=args.grey, test=True)
+    cnn_dataloader = get_combined_cnn_dataloader(training_labels[:N], 32, args.feature_folder, grey=args.grey)
+    test_cnn_dataloader = get_combined_cnn_dataloader(test_labels[:test_N], 32, args.feature_folder, grey=args.grey, test=True)
     classifier = SVC(kernel=args.svm_kernel)
-    cv_scores = cross_val_score(classifier, baseline_cnn_features, baseline_cnn_labels, cv=3)
-    print('CV scores', cv_scores.mean())
+    combined_cnn_features, combined_cnn_labels = get_all_data_from_loader(cnn_dataloader)
+    test_combined_cnn_features, test_combined_cnn_labels = get_all_data_from_loader(test_cnn_dataloader)
+    cv_scores = cross_val_score(classifier, combined_cnn_features, combined_cnn_labels, cv=3)
+    print('CV scores', cv_scores)
     '''
     print('Fitting the SVM')
-    classifier.fit(baseline_cnn_features, baseline_cnn_labels)
-    scores = classifier.score(test_baseline_cnn_features, test_baseline_cnn_labels)
-    print('Baseline CNN scores', scores)
+    classifier.fit(combined_cnn_features, combined_cnn_labels)
+    score = classifier.score(test_combined_cnn_features, test_combined_cnn_labels)
+    print('Baseline CNN score', score)
     '''
 

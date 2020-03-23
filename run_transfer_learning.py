@@ -18,8 +18,8 @@ def get_argparser():
                         help="The path to the image data folder")
     parser.add_argument("-train-idx", "--training-index-file", type=str, default="data/Butterfly200_train_release.txt",
                         help="The path to the file with training indices")
-    parser.add_argument("-test-idx", "--test-index-file", type=str, default="data/Butterfly200_test_release.txt",
-                        help="The path to the file with test indices")
+    parser.add_argument("-dev-idx", "--development-index-file", type=str, default="data/Butterfly200_val_release.txt",
+                        help="The path to the file with development indices")
     parser.add_argument("-s", "--species-file", type=str, default="data/species.txt",
                         help="The path to the file with mappings from index to species name")
     parser.add_argument("-m", "--model-name", required=True, type=str, help="Model to use in transfer learning")

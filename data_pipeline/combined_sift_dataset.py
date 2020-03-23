@@ -7,10 +7,11 @@ import time
 import numpy as np
 from .utils import change_image_colourspace
 from sklearn.cluster import MiniBatchKMeans
+from sklearn.decomposition import PCA
 
 class CombinedSIFTDataset(Dataset):
 
-    def __init__(self, labels, feature_folder, vocabulary_size, grey, test=False):
+    def __init__(self, labels, feature_folder, vocabulary_size, grey, test=False, reduced_dims=200):
         self.labels = labels
         self.test = test
         test_id = '_test' if self.test else ''
@@ -19,7 +20,7 @@ class CombinedSIFTDataset(Dataset):
             supported_colour_spaces.append('grey')
         self.features = None
         for i, colour_space in enumerate(supported_colour_spaces):
-            full_feature_path = path.join(feature_folder, 'sift_features_' + color_space + '_' + str(vocabulary_size) + test_id)
+            full_feature_path = path.join(feature_folder, 'sift_features_' + colour_space + '_' + str(vocabulary_size) + test_id)
             if path.exists(full_feature_path):
                 print('Loading SIFT features from', full_feature_path)
                 colour_features = pickle.load(open(full_feature_path, "rb"))
@@ -31,6 +32,17 @@ class CombinedSIFTDataset(Dataset):
                     self.features = np.concatenate((self.features, colour_features), axis=1)
             else:
                 raise ValueError('Could not find path', full_feature_path)
+        if reduced_dims is not None:
+            reduced_features_path = full_feature_path + "_reduced_" + str(reduced_dims)
+            if path.exists(reduced_features_path):
+                print('Loading reduced imagened features from', reduced_features_path)
+                self.features = pickle.load(open(reduced_features_path, "rb"))            
+            else:
+                print('Building reduced features of size', reduced_dims)
+                pca = PCA(n_components=reduced_dims)
+                self.features = pca.fit_transform(self.features)
+                print('Saving reduced imagened features to', reduced_features_path)
+                pickle.dump(self.features, open(reduced_features_path, "wb"))            
         print('Got combined features of shape', self.features.shape)
 
     def __len__(self):
