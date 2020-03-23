@@ -44,6 +44,8 @@ class BaselineCNNDataset(Dataset):
             self.get_features_for_images()
             print('Saving baseline CNN features to', full_feature_path)
             torch.save(self.features, full_feature_path)
+        # since the features come from a CNN they are batched tensors
+        self.features = [f[0].cpu().numpy() for f in self.features]        
         if reduced_dims is not None:
             reduced_features_path = path.join(curr_dir, feature_path + "_reduced_" + reduced_dims)
             if path.exists(reduced_features_path):

@@ -12,7 +12,7 @@ class ColouredSIFTDataset(Dataset):
 
     def __init__(self, images, labels, feature_folder, vocabulary_size, color_space, test=False):
         self.images = np.asarray(images)
-        if self.images.shape[-1] == 3:
+        if self.images.shape[-1] != 3:
             raise ValueError('Images need to have colour to form a coloured SIFT dataset')
         self.labels = labels
         assert len(self.images) == len(self.labels)

@@ -46,10 +46,8 @@ if __name__ == "__main__":
     test_imagenet_features, test_imagenet_labels = get_all_data_from_loader(test_imagenet_feature_dataloader)
     print('Got features')
     classifier = SVC(kernel=args.svm_kernel)
-    cv_scores = cross_val_score(classifier, sift_features, sift_labels, cv=3)
+    cv_scores = cross_val_score(classifier, imagenet_features, imagenet_labels, cv=3)
     print('CV scores', cv_scores.mean())
-    '''
     classifier.fit(imagenet_features, imagenet_labels)
     imagenet_scores = classifier.score(test_imagenet_features, test_imagenet_labels)
     print('Imagenet scores', imagenet_scores)
-    '''

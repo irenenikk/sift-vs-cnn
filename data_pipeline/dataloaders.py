@@ -6,6 +6,8 @@ from .sift_dataset import SIFTDataset
 from .imagenet_pretrained import PretrainedImagenet
 from .coloured_sift_dataset import ColouredSIFTDataset
 from .baseline_cnn_dataset import BaselineCNNDataset
+from .combined_sift_dataset import CombinedSIFTDataset
+from .combined_cnn_dataset import CombinedCNNDataset
 from .utils import SampleRescale, SampleToTensor
 
 def get_butterfly_dataloader(image_root, index_file, species_file, batch_size, label_i, grey=False, length=None, color_space=None):
@@ -39,6 +41,16 @@ def get_pretrained_imagenet_dataloader(images, labels, label_amount, batch_size,
     return dataloader
 
 def get_baseline_cnn_dataloader(images, labels, label_amount, batch_size, feature_path, extractor_path, color_space=None, grey=False, reduced_dims=None):
-    imagenet_dataset = BaselineCNNDataset(images, labels, label_amount, feature_path, extractor_path, reduced_dims, color_space=color_space, grey=grey)
-    dataloader = DataLoader(imagenet_dataset, batch_size=batch_size, shuffle=True)
+    cnn_dataset = BaselineCNNDataset(images, labels, label_amount, feature_path, extractor_path, reduced_dims, color_space=color_space, grey=grey)
+    dataloader = DataLoader(cnn_dataset, batch_size=batch_size, shuffle=True)
+    return dataloader
+
+def get_combined_sift_dataloader(labels, batch_size, feature_folder, vocabulary_size, grey, test=False):
+    combined_dataset = CombinedSIFTDataset(labels, feature_folder, vocabulary_size, grey, test)
+    dataloader = DataLoader(combined_dataset, batch_size=batch_size, shuffle=True)
+    return dataloader
+
+def get_combined_cnn_dataloader(labels, batch_size, feature_folder, grey, test=False):
+    combined_dataset = CombinedCNNDataset(labels, feature_folder, grey, test)
+    dataloader = DataLoader(combined_dataset, batch_size=batch_size, shuffle=True)
     return dataloader

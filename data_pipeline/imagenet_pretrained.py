@@ -30,6 +30,8 @@ class PretrainedImagenet(Dataset):
             self.get_features_for_images()
             print('Saving pretrained Imagenet features to', full_feature_path)
             torch.save(self.features, full_feature_path)
+        # since the features come from a CNN they are batched tensors
+        self.features = [f[0].cpu().numpy() for f in self.features]
         if reduced_dims is not None:
             reduced_features_path = path.join(curr_dir, feature_path + "_reduced_" + reduced_dims)
             if path.exists(reduced_features_path):
@@ -54,7 +56,6 @@ class PretrainedImagenet(Dataset):
         model = self.load_transfer_learned_extractor()
         children = list(model.children())
         feature_extractor = nn.Sequential(*list(children[:-2] + [Flatten()] + [children[-2]]))
-        import ipdb; ipdb.set_trace()
         feature_extractor.eval()
         feature_extractor.to(device)
         print('Getting imagenet features for', len(self.images), 'images')
