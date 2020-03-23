@@ -23,8 +23,8 @@ def get_argparser():
     parser.add_argument("-b-cnn", "--baseline-cnn-path", required=True, type=str, help="Path to trained baseline CNN")
     parser.add_argument("-cnn-feat", "--cnn-features", required=True, type=str, help="Path to baseline CNN features")
     parser.add_argument("-kernel", "--svm-kernel", default="linear", help="SVM kernel to use in classification")
-    parser.add_argument("-g-cnn", "--cnn-grey", default=False, action="store_true")
-    parser.add_argument("-gccnn", "--cnn-color-space", type=str, default=None, help="Color space to use in baseline CNN features")
+    parser.add_argument("-g", "--grey", default=False, action="store_true")
+    parser.add_argument("-c", "--color-space", type=str, default=None, help="Color space to use in baseline CNN features")
     # TODO: add reduced dims
     return parser
 
@@ -46,8 +46,12 @@ if __name__ == "__main__":
                                                                         batch_size, args.cnn_features + '_test', args.baseline_cnn_path, args.cnn_color_space, args.cnn_grey)
     test_baseline_cnn_features, test_baseline_cnn_labels = get_all_data_from_loader(test_baseline_cnn_feature_dataloader)
     classifier = SVC(kernel=args.svm_kernel)
-    print('Running cross validation')
+    cv_scores = cross_val_score(classifier, sift_features, sift_labels, cv=3)
+    print('CV scores', cv_scores.mean())
+    '''
+    print('Fitting the SVM')
     classifier.fit(baseline_cnn_features, baseline_cnn_labels)
     scores = classifier.score(test_baseline_cnn_features, test_baseline_cnn_labels)
     print('Baseline CNN scores', scores)
+    '''
 

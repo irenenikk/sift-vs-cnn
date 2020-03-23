@@ -29,7 +29,6 @@ if __name__ == "__main__":
     parser = get_argparser()
     args = parser.parse_args()
     N = args.no_images
-    batch_size = N
     test_N = 1000
     label_i = args.label_index
     training_indices, training_labels = get_indices_and_labels(args.training_index_file, args.label_index)
@@ -37,19 +36,21 @@ if __name__ == "__main__":
     test_indices, test_labels = get_indices_and_labels(args.test_index_file, args.label_index)
     test_images = read_images(args.image_root, test_indices, test_N, grey=False)
     sift_dataloader = None
-    if args.colour_space is None:
-        sift_dataloader = get_sift_dataloader(training_images, training_labels[:N], args.feature_folder, 32, feature_size=args.sift_feature_size)
-    else:
-        sift_dataloader = get_coloured_sift_dataloader(training_images, training_labels[:N], args.feature_folder, 32, args.colour_space, feature_size=args.sift_feature_size)
     test_sift_dataloader = None
     if args.colour_space is None:
+        sift_dataloader = get_sift_dataloader(training_images, training_labels[:N], args.feature_folder, 32, feature_size=args.sift_feature_size)
         test_sift_dataloader = get_sift_dataloader(test_images, test_labels[:test_N], args.feature_folder, 32, feature_size=args.sift_feature_size, test=True)
     else:
+        sift_dataloader = get_coloured_sift_dataloader(training_images, training_labels[:N], args.feature_folder, 32, args.colour_space, feature_size=args.sift_feature_size)
         test_sift_dataloader = get_coloured_sift_dataloader(test_images, test_labels[:test_N], args.feature_folder, 32, args.colour_space, feature_size=args.sift_feature_size, test=True)
     sift_features, sift_labels = get_all_data_from_loader(sift_dataloader)
     print('Got features')
     classifier = SVC(kernel=args.svm_kernel)
+    cv_scores = cross_val_score(classifier, sift_features, sift_labels, cv=3)
+    print('CV scores', cv_scores.mean())
+    '''
     classifier.fit(sift_features, sift_labels)
     test_sift_features, test_sift_labels = get_all_data_from_loader(test_sift_dataloader)
     score = classifier.score(test_sift_features, test_sift_labels)
     print('SIFT score', score)
+    '''

@@ -20,7 +20,7 @@ class ColouredSIFTDataset(Dataset):
         self.convert_images_to_colorspace(color_space)
         self.test = test
         test_id = '_test' if self.test else ''
-        self.trained_kmeans_path = os.path.join(feature_folder, 'trained_kmeans' + color_space + '_' + str(vocabulary_size))
+        self.trained_kmeans_path = path.join(feature_folder, 'trained_kmeans' + color_space + '_' + str(vocabulary_size))
         full_feature_path = path.join(feature_folder, 'coloured_sift_' + color_space + '_' + str(vocabulary_size) + test_id)
         if path.exists(full_feature_path):
             print('Loading SIFT features from', full_feature_path)
