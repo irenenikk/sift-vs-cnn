@@ -11,7 +11,7 @@ from sklearn.decomposition import PCA
 
 class CombinedSIFTDataset(Dataset):
 
-    def __init__(self, labels, feature_folder, vocabulary_size, grey, test=False, reduced_dims=200):
+    def __init__(self, labels, feature_folder, vocabulary_size, grey, test=False, reduced_dims=None):
         self.labels = labels
         self.test = test
         test_id = '_test' if self.test else ''
@@ -24,8 +24,8 @@ class CombinedSIFTDataset(Dataset):
             if path.exists(full_feature_path):
                 print('Loading SIFT features from', full_feature_path)
                 colour_features = pickle.load(open(full_feature_path, "rb"))
-                assert colour_features.shape[1] == vocabulary_size
-                assert colour_features.shape[0] == len(labels)
+                assert len(colour_features[0]) == vocabulary_size
+                assert len(colour_features) == len(labels)
                 if self.features is None:
                     self.features = colour_features
                 else:
@@ -33,9 +33,9 @@ class CombinedSIFTDataset(Dataset):
             else:
                 raise ValueError('Could not find path', full_feature_path)
         if reduced_dims is not None:
-            reduced_features_path = full_feature_path + "_reduced_" + str(reduced_dims)
+            reduced_features_path = path.join(feature_folder, "combined_sift_reduced_" + str(reduced_dims) + test_id)
             if path.exists(reduced_features_path):
-                print('Loading reduced imagened features from', reduced_features_path)
+                print('Loading reduced imagener features from', reduced_features_path)
                 self.features = pickle.load(open(reduced_features_path, "rb"))            
             else:
                 print('Building reduced features of size', reduced_dims)

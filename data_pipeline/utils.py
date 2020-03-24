@@ -5,6 +5,7 @@ from skimage import transform
 import numpy as np
 import pandas as pd
 import torch.nn as nn
+import matplotlib.pyplot as plt
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -122,8 +123,6 @@ def change_image_colourspace(color_space, image):
         transform = lambda image: cv.cvtColor(image, cv.COLOR_BGR2YCrCb)
     elif color_space == 'bgr':
         transform = lambda image: normalise_rgb_dims(image)
-    elif color_space == 'obgr':
-        raise ValueError('Color space', color_space, 'hasn\'t been implemented yet')
     else:
         raise ValueError('Color space', color_space, 'not supported')
     return transform(image)
@@ -136,11 +135,12 @@ class Flatten(nn.Module):
     def forward(self, x):
         return x.reshape(x.size(0), -1)
 
-class Transpose(nn.Module):
-
-    def __init__(self):
-        super(Transpose, self).__init__()
-
-    def forward(self, x):
-        import ipdb; ipdb.set_trace()
-        return x.t()
+def visualise_cnn(image, till_kernel, preprocess):
+    model = nn.Sequential(*list(till_kernel))  
+    res = model(preprocess(image).unsqueeze(0).to(device))
+    size = 4
+    fig = plt.figure(figsize=(8, 8))
+    for i in range(1, size**2+1):
+        fig.add_subplot(size, size, i)
+        plt.imshow(res.detach().numpy()[0, i, :, :])
+    plt.show()

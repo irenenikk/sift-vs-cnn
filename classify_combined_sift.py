@@ -37,11 +37,12 @@ if __name__ == "__main__":
     test_images = read_images(args.image_root, test_indices, test_N, grey=False)
     sift_dataloader = None
     test_sift_dataloader = None
-    sift_dataloader = get_combined_sift_dataloader(training_labels[:N], 32, args.feature_folder, feature_size=args.sift_feature_size, grey=args.grey)
-    test_sift_dataloader = get_combined_sift_dataloader(test_labels[:test_N], 32, args.feature_folder, feature_size=args.sift_feature_size, grey=args.grey, test=True)
+    sift_dataloader = get_combined_sift_dataloader(training_labels[:N], 32, args.feature_folder, args.sift_feature_size, grey=args.grey)
+    test_sift_dataloader = get_combined_sift_dataloader(test_labels[:test_N], 32, args.feature_folder, args.sift_feature_size, grey=args.grey, test=True)
     sift_features, sift_labels = get_all_data_from_loader(sift_dataloader)
     print('Got features')
     classifier = SVC(kernel=args.svm_kernel)
+    '''
     cv_scores = cross_val_score(classifier, sift_features, sift_labels, cv=3)
     print('CV scores', cv_scores.mean())
     '''
@@ -49,4 +50,3 @@ if __name__ == "__main__":
     test_sift_features, test_sift_labels = get_all_data_from_loader(test_sift_dataloader)
     score = classifier.score(test_sift_features, test_sift_labels)
     print('SIFT score', score)
-    '''

@@ -15,7 +15,7 @@ class SIFTDataset(Dataset):
         assert len(self.images) == len(self.labels)
         self.test = test
         test_id = '_test' if self.test else ''
-        full_feature_path = path.join(feature_folder, 'sift_features_' + str(vocabulary_size) + test_id)
+        full_feature_path = path.join(feature_folder, 'sift_features_grey_' + str(vocabulary_size) + test_id)
         vocabulary_path = path.join(feature_folder, 'sift_vocabulary_' + str(vocabulary_size))
         if path.exists(full_feature_path):
             print('Loading SIFT features from', full_feature_path)
@@ -53,7 +53,6 @@ class SIFTDataset(Dataset):
         print('Getting BOW features')
         sift = cv.xfeatures2d.SIFT_create()
         extract = cv.xfeatures2d.SIFT_create()
-        # TODO: which matcher to use?
         flann_params = dict(algorithm = 1, trees = 5)
         matcher = cv.FlannBasedMatcher(flann_params, {})
         bow_extractor = cv.BOWImgDescriptorExtractor(extract, matcher)

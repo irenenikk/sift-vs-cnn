@@ -27,10 +27,8 @@ class BaselineCNNDataset(Dataset):
         self.extractor_path = path.join(curr_dir, extractor_path)
         if color_space is not None:
             self.extractor_path += '_' + color_space
-            feature_path += '_' + color_space
         elif grey:
             self.extractor_path += '_grey'
-            feature_path += '_grey'
         assert len(self.images) == len(self.labels)
         full_feature_path = path.join(curr_dir, feature_path)
         if path.exists(full_feature_path):
@@ -58,7 +56,6 @@ class BaselineCNNDataset(Dataset):
                 print('Saving reduced imagened features to', reduced_features_path)
                 pickle.dump(self.features, open(reduced_features_path, "wb"))
 
-
     def get_features_for_images(self):
         preprocess = transforms.Compose([
             Rescale(256),
@@ -81,7 +78,6 @@ class BaselineCNNDataset(Dataset):
         print('Found a baseline CNN feature extractor')
         checkpoint = torch.load(self.extractor_path, map_location=device)
         feature_extractor.load_state_dict(checkpoint['model_state_dict'])
-        feature_extractor.eval()
         return feature_extractor
             
     def __len__(self):

@@ -38,5 +38,5 @@ if __name__ == '__main__':
                                                                     batch_size=args.batch_size, label_i=args.label_index,\
                                                                         color_space=args.color_space, grey=args.grey)
     baseline_cnn = BaselineCNN(grey=args.grey)
-    run_baseline_training(baseline_cnn, args.model_checkpoint, training_butterfly_dataloader,\
+    run_baseline_training(baseline_cnn, args.model_checkpoint + '_' args.colour_space, training_butterfly_dataloader,\
                                 development_butterfly_dataloader, resume=args.resume, epochs=args.epochs)

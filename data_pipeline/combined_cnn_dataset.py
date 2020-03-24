@@ -11,7 +11,7 @@ from sklearn.decomposition import PCA
 
 class CombinedCNNDataset(Dataset):
 
-    def __init__(self, labels, feature_folder, grey, test=False, reduced_dims=500):
+    def __init__(self, labels, feature_folder, grey, test=False, reduced_dims=None):
         self.labels = labels
         self.test = test
         test_id = '_test' if self.test else ''
@@ -33,15 +33,15 @@ class CombinedCNNDataset(Dataset):
             else:
                 raise ValueError('Could not find path', full_feature_path)
         if reduced_dims is not None:
-            reduced_features_path = full_feature_path + "_reduced_" + str(reduced_dims)
+            reduced_features_path = "combined_cnn_reduced_" + str(reduced_dims)
             if path.exists(reduced_features_path):
-                print('Loading reduced imagened features from', reduced_features_path)
+                print('Loading reduced features from', reduced_features_path)
                 self.features = pickle.load(open(reduced_features_path, "rb"))            
             else:
                 print('Building reduced features of size', reduced_dims)
                 pca = PCA(n_components=reduced_dims)
                 self.features = pca.fit_transform(self.features)
-                print('Saving reduced imagened features to', reduced_features_path)
+                print('Saving reduced features to', reduced_features_path)
                 pickle.dump(self.features, open(reduced_features_path, "wb"))
         print('Got combined features of shape', self.features.shape)
 

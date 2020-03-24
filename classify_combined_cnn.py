@@ -38,6 +38,7 @@ if __name__ == "__main__":
     classifier = SVC(kernel=args.svm_kernel)
     combined_cnn_features, combined_cnn_labels = get_all_data_from_loader(cnn_dataloader)
     test_combined_cnn_features, test_combined_cnn_labels = get_all_data_from_loader(test_cnn_dataloader)
+    '''
     cv_scores = cross_val_score(classifier, combined_cnn_features, combined_cnn_labels, cv=3)
     print('CV scores', cv_scores)
     '''
@@ -45,5 +46,4 @@ if __name__ == "__main__":
     classifier.fit(combined_cnn_features, combined_cnn_labels)
     score = classifier.score(test_combined_cnn_features, test_combined_cnn_labels)
     print('Baseline CNN score', score)
-    '''
 

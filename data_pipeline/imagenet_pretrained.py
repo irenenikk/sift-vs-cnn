@@ -50,13 +50,12 @@ class PretrainedImagenet(Dataset):
             Rescale(256),
             ToTensor(grey=False),
             # this is obligatory when using preatrained models from pytorch
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            #transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
         # enable GPU
         model = self.load_transfer_learned_extractor()
         children = list(model.children())
         feature_extractor = nn.Sequential(*list(children[:-2] + [Flatten()] + [children[-2]]))
-        feature_extractor.eval()
         feature_extractor.to(device)
         print('Getting imagenet features for', len(self.images), 'images')
         with torch.no_grad():

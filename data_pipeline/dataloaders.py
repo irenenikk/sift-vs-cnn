@@ -35,7 +35,7 @@ def get_coloured_sift_dataloader(images, labels, feature_folder, batch_size, col
     dataloader = DataLoader(sift_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
-def get_pretrained_imagenet_dataloader(images, labels, label_amount, batch_size, feature_path, extractor_path, reduced_dims=500):
+def get_pretrained_imagenet_dataloader(images, labels, label_amount, batch_size, feature_path, extractor_path, reduced_dims=None):
     imagenet_dataset = PretrainedImagenet(images, labels, label_amount, feature_path, extractor_path, reduced_dims)
     dataloader = DataLoader(imagenet_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
