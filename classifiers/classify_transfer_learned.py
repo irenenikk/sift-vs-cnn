@@ -1,12 +1,15 @@
-import pandas as pd
+import sys
+sys.path.append('./')
+
 import argparse
-from data_pipeline.dataloaders import get_pretrained_imagenet_dataloader
-from data_pipeline.utils import read_images, get_all_data_from_loader
-from sklearn.svm import SVC
-from sklearn.model_selection import cross_val_score
-from utils import get_indices_and_labels
+import pandas as pd
 import cv2 as cv
 import numpy as np
+
+from data_pipeline.dataloaders import get_pretrained_imagenet_dataloader
+from data_pipeline.utils import read_images
+from classifiers.utils import get_indices_and_labels
+from classifiers.svm_classifier import classify
 
 def get_argparser():
     parser = argparse.ArgumentParser(description='Obtain SIFT features for training set')
@@ -40,20 +43,10 @@ if __name__ == "__main__":
     test_images = read_images(args.image_root, test_indices, test_N, grey=False)
     imagenet_feature_dataloader = get_pretrained_imagenet_dataloader(training_images, training_labels[:N], training_labels.nunique(), \
                                                                         32, args.imagenet_features, args.imagenet_extractor_path)
-    imagenet_features, imagenet_labels = get_all_data_from_loader(imagenet_feature_dataloader)
     test_imagenet_feature_dataloader = get_pretrained_imagenet_dataloader(test_images, test_labels[:test_N], test_labels[:test_N].nunique(), \
                                                                         32, args.imagenet_features + '_test', args.imagenet_extractor_path)
-    imagenet_features, imagenet_labels = get_all_data_from_loader(imagenet_feature_dataloader)
-    test_imagenet_features, test_imagenet_labels = get_all_data_from_loader(test_imagenet_feature_dataloader)
-    print('Got features')
-    classifier = SVC(kernel=args.svm_kernel)
-    '''
-    cv_scores = cross_val_score(classifier, imagenet_features, imagenet_labels, cv=3)
-    print('CV scores', cv_scores.mean())
-    '''
-    classifier.fit(imagenet_features, imagenet_labels)
-    imagenet_scores = classifier.score(test_imagenet_features, test_imagenet_labels)
-    print('Imagenet scores', imagenet_scores)
+    classifier = classify(imagenet_feature_dataloader, test_imagenet_feature_dataloader, args.svm_kernel)
+    # show false predictions
     preds = classifier.predict(test_imagenet_features)
     false_pred = preds != test_imagenet_labels
     false_pred_images = np.asarray(test_images)[false_pred]

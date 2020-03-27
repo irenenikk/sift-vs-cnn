@@ -1,13 +1,17 @@
-import torch.optim as optim
+import sys
+sys.path.append('./')
+
+import copy
 import argparse
-from models.baseline_cnn import BaselineCNN
 import torch
+import torch.optim as optim
 import torch.nn as nn
 from sklearn.model_selection import GridSearchCV
 from skorch import NeuralNetClassifier
-from data_pipeline.imagenet_pretrained import PretrainedImagenet
-import copy
 from torch.optim import lr_scheduler
+
+from models.baseline_cnn import BaselineCNN
+from data_pipeline.imagenet_pretrained import PretrainedImagenet
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

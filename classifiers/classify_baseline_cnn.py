@@ -1,10 +1,14 @@
-import pandas as pd
+import sys
+sys.path.append('./')
+
 import argparse
-from data_pipeline.dataloaders import get_combined_sift_dataloader
+import pandas as pd
+
+from data_pipeline.dataloaders import get_baseline_cnn_dataloader
 from data_pipeline.utils import read_images, get_all_data_from_loader
-from sklearn.svm import SVC
-from sklearn.model_selection import cross_val_score
 from utils import get_indices_and_labels
+from training.cnn_training import evaluate_model_accuracy
+from svm_classifier import classify
 
 def get_argparser():
     parser = argparse.ArgumentParser(description='Obtain SIFT features for training set')
@@ -16,12 +20,14 @@ def get_argparser():
                         help="The path to the file with test indices")
     parser.add_argument("-s", "--species-file", type=str, default="data/species.txt",
                         help="The path to the file with mappings from index to species name")
-    parser.add_argument("-sift-size", "--sift-feature-size", required=True, type=int, help="The feature size for SIFT")
-    parser.add_argument("-f", "--feature-folder", required=True, type=str, help="The path to SIFT feature base filename")
     parser.add_argument("-N", "--no-images", required=True, type=int, help="The amount of images to use in building features")
     parser.add_argument("-l", "--label-index", required=True, type=int, help="Which index to use as the label, between 1 and 5. Use 1 o classify species, 5 to classify families.")
+    parser.add_argument("-b-cnn", "--baseline-cnn-path", required=True, type=str, help="Path to trained baseline CNN")
+    parser.add_argument("-cnn-feat", "--cnn-features", required=True, type=str, help="Path to baseline CNN features")
+    parser.add_argument("-cnn-test-feat", "--cnn-test-features", required=True, type=str, help="Path to baseline CNN features")
     parser.add_argument("-kernel", "--svm-kernel", default="linear", help="SVM kernel to use in classification")
     parser.add_argument("-g", "--grey", default=False, action="store_true")
+    parser.add_argument("-c", "--color-space", type=str, default=None, help="Color space to use in baseline CNN features")
     # TODO: add reduced dims
     return parser
 
@@ -35,18 +41,8 @@ if __name__ == "__main__":
     training_images = read_images(args.image_root, training_indices, N, grey=False)
     test_indices, test_labels = get_indices_and_labels(args.test_index_file, args.label_index)
     test_images = read_images(args.image_root, test_indices, test_N, grey=False)
-    sift_dataloader = None
-    test_sift_dataloader = None
-    sift_dataloader = get_combined_sift_dataloader(training_labels[:N], 32, args.feature_folder, args.sift_feature_size, grey=args.grey)
-    test_sift_dataloader = get_combined_sift_dataloader(test_labels[:test_N], 32, args.feature_folder, args.sift_feature_size, grey=args.grey, test=True)
-    sift_features, sift_labels = get_all_data_from_loader(sift_dataloader)
-    print('Got features')
-    classifier = SVC(kernel=args.svm_kernel)
-    '''
-    cv_scores = cross_val_score(classifier, sift_features, sift_labels, cv=3)
-    print('CV scores', cv_scores.mean())
-    '''
-    classifier.fit(sift_features, sift_labels)
-    test_sift_features, test_sift_labels = get_all_data_from_loader(test_sift_dataloader)
-    score = classifier.score(test_sift_features, test_sift_labels)
-    print('SIFT score', score)
+    baseline_cnn_feature_dataloader = get_baseline_cnn_dataloader(training_images, training_labels[:N], training_labels.nunique(), \
+                                                                        32, args.cnn_features, args.baseline_cnn_path, args.color_space, args.grey)
+    test_baseline_cnn_feature_dataloader = get_baseline_cnn_dataloader(test_images, test_labels[:test_N], training_labels.nunique(), \
+                                                                        32, args.cnn_test_features, args.baseline_cnn_path, args.color_space, args.grey)
+    classifier = classify(baseline_cnn_feature_dataloader, test_baseline_cnn_feature_dataloader, args.svm_kernel)

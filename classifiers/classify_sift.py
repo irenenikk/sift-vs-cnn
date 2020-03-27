@@ -1,12 +1,15 @@
-import pandas as pd
+import sys
+sys.path.append('./')
+
 import argparse
-from data_pipeline.dataloaders import get_sift_dataloader, get_coloured_sift_dataloader
-from data_pipeline.utils import read_images, get_all_data_from_loader
-from sklearn.svm import SVC
-from sklearn.model_selection import cross_val_score
-from utils import get_indices_and_labels
+import pandas as pd
 import numpy as np
 import cv2 as cv
+
+from data_pipeline.dataloaders import get_sift_dataloader, get_coloured_sift_dataloader
+from data_pipeline.utils import read_images
+from classifiers.utils import get_indices_and_labels
+from classifiers.svm_classifier import classify
 
 def get_argparser():
     parser = argparse.ArgumentParser(description='Obtain SIFT features for training set')
@@ -45,15 +48,7 @@ if __name__ == "__main__":
     else:
         sift_dataloader = get_coloured_sift_dataloader(training_images, training_labels[:N], args.feature_folder, 32, args.colour_space, feature_size=args.sift_feature_size)
         test_sift_dataloader = get_coloured_sift_dataloader(test_images, test_labels[:test_N], args.feature_folder, 32, args.colour_space, feature_size=args.sift_feature_size, test=True)
-    sift_features, sift_labels = get_all_data_from_loader(sift_dataloader)
-    print('Got features')
-    classifier = SVC(kernel=args.svm_kernel)
-    cv_scores = cross_val_score(classifier, sift_features, sift_labels, cv=3)
-    print('CV scores', cv_scores.mean())
-    classifier.fit(sift_features, sift_labels)
-    test_sift_features, test_sift_labels = get_all_data_from_loader(test_sift_dataloader)
-    score = classifier.score(test_sift_features, test_sift_labels)
-    print('SIFT score', score)
+    classifier = classify(sift_dataloader, test_sift_dataloader, args.svm_kernel)
     preds = classifier.predict(test_sift_features)
     false_pred = preds != test_sift_labels
     false_pred_images = np.asarray(test_images)[false_pred]

@@ -2,19 +2,11 @@
 
 This project compares using SIFT with color features and both trained and pretrained CNNs in a butterfly classification task.
 
-## TODO / thoughts
-
-- [ ] Improve data preprocessing when training the neural network by doing random cropping?
-- [X] Make sure the tensor color dimensions are appropriate for OpenCV
-- [ ] Test reducing feature vector size for pretrained imagenet
+The `data_pipeline` folder contains the different datasets used, implemented as PyTorch datasets and dataloaders.
+The `models` folder contains the baseline CNN used in the project.
+The `training` has all the code required to train the baseline CNN and the fine-tuned ImageNet classifier.
+The `classifier` has the scripts used to obtain results from trained CNNs and SIFT features with an SVM.
 
 ## The butterfly dataset
 
-The hierarchy of the data as presented in order in the index files is
-
-species(1-200), genus(1-116), subfamily(1-23), family(1-5)
-
-
-## Notes about training the CNNS
-
-All models appear to converge after 10 epochs based on accuracy obtained on development set.
+This Butterfly-200 dataset used in this project is not included in the repo. You can download it from [here](https://www.dropbox.com/sh/3p4x1oc5efknd69/AABwnyoH2EKi6H9Emcyd0pXCa?dl=0), and move it to a folder called `data` in the root.
